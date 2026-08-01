@@ -12,11 +12,9 @@ from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from typing import Any, Dict, List, Optional
 
-import gspread
 import requests
 from dotenv import load_dotenv
 from flask import Flask, request
-from google.oauth2.service_account import Credentials
 from openai import OpenAI
 
 
@@ -52,119 +50,325 @@ META_APP_SECRET = os.getenv("META_APP_SECRET", "").strip()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini").strip()
 
-GRAPH_API_VERSION = os.getenv(
-    "GRAPH_API_VERSION",
-    "v26.0",
-).strip()
-
-GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID", "").strip()
-GOOGLE_SERVICE_ACCOUNT_JSON = os.getenv(
-    "GOOGLE_SERVICE_ACCOUNT_JSON",
-    "",
-).strip()
+GRAPH_API_VERSION = os.getenv("GRAPH_API_VERSION", "v26.0").strip()
 
 ADMIN_NAME = os.getenv("ADMIN_NAME", "Arafat Rahman").strip()
 ADMIN_PHONE = os.getenv("ADMIN_PHONE", "01780618736").strip()
 
-PRODUCTS_SHEET = os.getenv("PRODUCTS_SHEET", "Products").strip()
-ORDERS_SHEET = os.getenv("ORDERS_SHEET", "Orders").strip()
-SESSIONS_SHEET = os.getenv("SESSIONS_SHEET", "Sessions").strip()
+
+# =========================================================
+# HARD-CODED PRODUCT DATABASE
+# =========================================================
+
+PRODUCTS: List[Dict[str, Any]] = [
+    {
+        "keywords": [
+            "ক্যামেরা", "camera", "digital camera", "print camera",
+            "ai camera", "প্রিন্ট ক্যামেরা"
+        ],
+        "name": "Premium Digital Camera",
+        "category": "Camera",
+        "price": 2150,
+        "offer_price": 2150,
+        "details": (
+            "চীন থেকে সরাসরি ইমপোর্ট করা ভালো মানের প্রোডাক্ট। "
+            "পরিষ্কার ছবি তোলে, সঙ্গে সঙ্গে ছবি প্রিন্ট করা যায় এবং "
+            "বাচ্চা ও বড়—সবার জন্য দারুণ একটি গিফট।"
+        ),
+        "features": [
+            "Includes 32GB Memory Card",
+            "পরিষ্কার ছবি তোলে",
+            "সঙ্গে সঙ্গে ছবি প্রিন্ট করা যায়",
+            "বাচ্চা ও বড়দের জন্য সুন্দর গিফট",
+        ],
+        "colors": [],
+        "warranty": "No Warranty",
+        "delivery_charge": 100,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+    {
+        "keywords": [
+            "4k", "flip camera", "camera", "4k camera",
+            "4k flip digital camera"
+        ],
+        "name": "4K Flip Digital Camera",
+        "category": "Camera",
+        "price": 2690,
+        "offer_price": 2690,
+        "details": (
+            "4K Recording, Flip Screen এবং Premium Design। "
+            "অর্ডার কনফার্ম করতে পছন্দের রঙ জানাতে হবে।"
+        ),
+        "features": [
+            "4K Recording",
+            "Flip Screen",
+            "Premium Design",
+        ],
+        "colors": ["Pink", "Black", "White", "Purple", "Brown"],
+        "warranty": "No Warranty",
+        "delivery_charge": 100,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+    {
+        "keywords": [
+            "galaxy projector", "projector lamp", "galaxy lamp",
+            "star projector", "প্রজেক্টর", "গ্যালাক্সি ল্যাম্প"
+        ],
+        "name": "Galaxy Projector Lamp",
+        "category": "Home Decor",
+        "price": 3600,
+        "offer_price": 3600,
+        "details": (
+            "আপনার রুমকে মুহূর্তেই তারাভরা আকাশের মতো সুন্দর করে তুলুন। "
+            "Bedroom, Living Room, Party এবং Gift-এর জন্য উপযোগী।"
+        ),
+        "features": [
+            "Galaxy & Star Projection",
+            "Bluetooth Speaker",
+            "White Noise",
+            "Remote Control",
+            "13 Projection Themes",
+            "Adjustable Brightness",
+            "Timer Function",
+            "USB Type-C Power",
+        ],
+        "box_items": [
+            "Galaxy Projector Lamp",
+            "Remote Control",
+            "USB Type-C Cable",
+            "User Manual",
+        ],
+        "colors": [],
+        "warranty": "No Warranty",
+        "delivery_charge": 100,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+    {
+        "keywords": [
+            "জুসার", "juicer", "blender", "mini juicer",
+            "brushless motor juicer"
+        ],
+        "name": "High Quality Brushless Motor Mini Juicer",
+        "category": "Kitchen",
+        "price": 890,
+        "offer_price": 890,
+        "details": "ফল ও সবজি ব্লেন্ড করার জন্য Portable Mini Juicer।",
+        "features": [
+            "Brushless Motor",
+            "Portable Design",
+            "Fruit & Vegetable Blender",
+        ],
+        "colors": [],
+        "warranty": "No Warranty",
+        "delivery_charge": 0,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+    {
+        "keywords": [
+            "ইয়ারবাড", "earbuds", "clip on", "open ear",
+            "wireless earbuds", "হেডফোন"
+        ],
+        "name": "Clip-On Open Ear Wireless Earbuds",
+        "category": "Audio",
+        "price": 1600,
+        "offer_price": 1600,
+        "details": (
+            "পরিষ্কার ভয়েস কোয়ালিটি, বিল্ট-ইন মাইক্রোফোন, "
+            "কল রিসিভ/রিজেক্ট এবং গান শোনা ও ফোনে কথা বলা—দুটোর জন্য ব্যবহার করা যায়।"
+        ),
+        "features": [
+            "Open Ear Design",
+            "Clip-On Design",
+            "Built-in Microphone",
+            "Call Receive/Reject",
+            "Comfortable & Stylish",
+        ],
+        "colors": [],
+        "warranty": "No Warranty",
+        "delivery_charge": 100,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+    {
+        "keywords": [
+            "butterfly", "headset", "butterfly headset",
+            "bluetooth headset", "butterfly earrings"
+        ],
+        "name": "Butterfly Earrings Bluetooth Headset (2025 New Model)",
+        "category": "Audio",
+        "price": 1250,
+        "offer_price": 1250,
+        "details": "Butterfly Earrings style Clip-On Open Ear Bluetooth Headset।",
+        "features": [
+            "Butterfly Earrings Design",
+            "Bluetooth 5.4",
+            "Real-time Translation",
+            "Clip-on Open Ear",
+            "Noise Reduction",
+            "Up to 15 Hours Battery",
+        ],
+        "colors": [],
+        "warranty": "No Warranty",
+        "delivery_charge": 100,
+        "delivery_time": "2-4 Days",
+        "stock": "In Stock",
+        "status": "Active",
+        "image_url": "",
+    },
+]
 
 
 # =========================================================
-# CONSTANTS
+# HARD-CODED FAQ DATABASE
 # =========================================================
 
-PRODUCT_HEADERS = [
-    "Keywords",
-    "Product Name",
-    "Category",
-    "Price",
-    "Offer Price",
-    "Details",
-    "Features",
-    "Colors",
-    "Warranty",
-    "Delivery Charge",
-    "Delivery Time",
-    "Stock",
-    "Status",
-    "Image URL",
+FAQS: List[Dict[str, Any]] = [
+    {
+        "keywords": ["delivery time", "কত দিনে", "জেলা", "থানা", "ডেলিভারি সময়"],
+        "answer": (
+            "📍 আপনার জেলা ও থানার নামটি জানালে আমরা আপনার এলাকাভিত্তিক "
+            "সঠিক ডেলিভারি সময় জানিয়ে দিতে পারব। সাধারণত ২–৪ দিনের মধ্যে "
+            "ডেলিভারি সম্পন্ন হয়।"
+        ),
+    },
+    {
+        "keywords": ["parcel update", "পার্সেল", "tracking", "ট্র্যাকিং"],
+        "answer": (
+            "📦 আপনার পার্সেলের সর্বশেষ আপডেট জানতে মোবাইল নম্বরটি পাঠান। "
+            f"আমি তথ্য Admin {ADMIN_NAME}-এর কাছে পৌঁছে দেব। "
+            f"Call/WhatsApp: {ADMIN_PHONE}"
+        ),
+    },
+    {
+        "keywords": ["courier", "steadfast", "home delivery", "কুরিয়ার"],
+        "answer": (
+            "🚚 আমরা Steadfast Courier-এর মাধ্যমে সারা বাংলাদেশে হোম ডেলিভারি করি। "
+            "আপনার অর্ডার নিরাপদভাবে ঠিকানায় পৌঁছে দেওয়া হবে।"
+        ),
+    },
+    {
+        "keywords": ["china", "চীন", "import", "ইমপোর্ট", "quality", "কোয়ালিটি"],
+        "answer": (
+            "🇨🇳 আমরা সরাসরি চীন থেকে প্রোডাক্ট ইমপোর্ট করি। "
+            "ভালো মানের প্রোডাক্ট সাশ্রয়ী দামে পৌঁছে দেওয়াই আমাদের অঙ্গীকার।"
+        ),
+    },
+    {
+        "keywords": ["wholesale", "হোলসেল", "MOQ", "bulk", "reselling", "ব্যবসা"],
+        "answer": (
+            "📦 Wholesale, Reselling বা Bulk Order-এর জন্য সরাসরি অ্যাডমিনের সঙ্গে যোগাযোগ করুন।\n"
+            f"👤 Admin: {ADMIN_NAME}\n📞 Call/WhatsApp: {ADMIN_PHONE}"
+        ),
+    },
+    {
+        "keywords": ["location", "লোকেশন", "ভৈরব", "কিশোরগঞ্জ", "ঠিকানা"],
+        "answer": (
+            "📍 আমাদের লোকেশন: ভৈরব, কিশোরগঞ্জ। "
+            "সরাসরি প্রোডাক্ট সংগ্রহ করতে চাইলে আগে সময় নিশ্চিত করুন।\n"
+            f"👤 Admin: {ADMIN_NAME}\n📞 Call/WhatsApp: {ADMIN_PHONE}"
+        ),
+    },
+    {
+        "keywords": ["payment", "cod", "cash on delivery", "বিকাশ", "নগদ", "পেমেন্ট"],
+        "answer": (
+            "💳 Cash on Delivery সুবিধা রয়েছে। অগ্রিম পেমেন্ট বাধ্যতামূলক নয়।\n"
+            f"📱 বিকাশ (Personal): {ADMIN_PHONE}\n"
+            f"📱 নগদ (Personal): {ADMIN_PHONE}\n"
+            "🏦 ব্যাংক ট্রান্সফার এবং ডেবিট/ক্রেডিট কার্ডেও পেমেন্ট করা যায়।"
+        ),
+    },
+    {
+        "keywords": ["cancel", "order cancel", "বাতিল", "পরিবর্তন"],
+        "answer": (
+            "🛍️ অর্ডার বাতিল বা পরিবর্তন করতে চাইলে যত দ্রুত সম্ভব "
+            f"Admin {ADMIN_NAME}-এর সঙ্গে যোগাযোগ করুন: {ADMIN_PHONE}"
+        ),
+    },
+    {
+        "keywords": ["stock", "available", "স্টক", "আছে কি"],
+        "answer": "📦 স্টক জানতে প্রোডাক্টের নাম বা ছবি পাঠান।",
+    },
+    {
+        "keywords": ["review", "reviews", "feedback", "রিভিউ"],
+        "answer": "⭐ কাস্টমারদের রিভিউ ও ফিডব্যাক দেখতে লিখুন “Review”।",
+    },
+    {
+        "keywords": ["international shipping", "দেশের বাইরে", "বিদেশে"],
+        "answer": (
+            "🌍 দেশের বাইরেও প্রোডাক্ট পাঠানো হয়। দেশ, ঠিকানা, কুরিয়ার খরচ "
+            "ও কাস্টমস নিয়ম অনুযায়ী চার্জ ও ডেলিভারি সময় ভিন্ন হতে পারে।"
+        ),
+    },
+    {
+        "keywords": ["return", "রিটার্ন", "return policy"],
+        "answer": (
+            "🔄 ডেলিভারির ২৪ ঘণ্টার মধ্যে যোগাযোগ করলে রিটার্ন করা যাবে। "
+            "৳১২০ রিটার্ন ডেলিভারি চার্জ প্রযোজ্য এবং প্রোডাক্ট অব্যবহৃত, "
+            "অরিজিনাল অবস্থায় ও সম্পূর্ণ প্যাকেজিংসহ থাকতে হবে।"
+        ),
+    },
+    {
+        "keywords": ["phone call", "microphone", "ফোনে কথা", "হেডফোন দিয়ে কল"],
+        "answer": (
+            "📞 হ্যাঁ, হেডফোন দিয়ে ফোনে কথা বলা যায়। পরিষ্কার ভয়েস, "
+            "বিল্ট-ইন মাইক্রোফোন এবং কল রিসিভ/রিজেক্ট সুবিধা রয়েছে।"
+        ),
+    },
+    {
+        "keywords": ["moderator", "মডারেটর", "job", "চাকরি"],
+        "answer": (
+            "😊 বর্তমানে আমাদের পেজে মডারেটর প্রয়োজন নেই। "
+            "ভবিষ্যতে প্রয়োজন হলে পেজে জানিয়ে দেওয়া হবে।"
+        ),
+    },
+    {
+        "keywords": ["scam", "প্রতারণা", "বিশ্বাস", "ভরসা"],
+        "answer": (
+            "😊 আপনার সতর্কতা স্বাভাবিক। আমরা ভালো মানের প্রোডাক্ট ও বিশ্বস্ত সেবা "
+            "দেওয়ার চেষ্টা করি। Cash on Delivery থাকায় প্রোডাক্ট হাতে পাওয়ার পর "
+            "মূল্য পরিশোধ করতে পারবেন।"
+        ),
+    },
+    {
+        "keywords": ["discount", "কম হবে", "দাম কম", "দরদাম"],
+        "answer": (
+            "😊 সর্বোচ্চ ৳২০ পর্যন্ত কমানোর অনুরোধ অ্যাডমিনের কাছে পাঠানো যেতে পারে। "
+            "চূড়ান্ত অনুমোদন অ্যাডমিন দেবেন।"
+        ),
+    },
+    {
+        "keywords": ["delivery charge", "ডেলিভারি চার্জ", "free delivery"],
+        "answer": (
+            "🚚 সাধারণ ডেলিভারি চার্জ সারা বাংলাদেশে ৳১০০। "
+            "Mini Juicer-এর ক্ষেত্রে Free Delivery প্রযোজ্য।"
+        ),
+    },
 ]
 
-ORDER_HEADERS = [
-    "Order ID",
-    "Created At",
-    "Facebook User ID",
-    "Customer Name",
-    "Mobile",
-    "Area/Village",
-    "Thana",
-    "District",
-    "Receive From",
-    "Full Address",
-    "Product Name",
-    "Color",
-    "Quantity",
-    "Unit Price",
-    "Delivery Charge",
-    "Total",
-    "Order Status",
-]
 
-SESSION_HEADERS = [
-    "Facebook User ID",
-    "Stage",
-    "Product Name",
-    "Color",
-    "Quantity",
-    "Customer Name",
-    "Mobile",
-    "Area/Village",
-    "Thana",
-    "District",
-    "Receive From",
-    "Full Address",
-    "Updated At",
-]
+# =========================================================
+# TEMPORARY SESSION & ORDER STORAGE
+# =========================================================
 
-CONFIRM_WORDS = {
-    "confirm",
-    "confirmed",
-    "কনফার্ম",
-    "হ্যাঁ কনফার্ম",
-    "yes confirm",
-}
+SESSIONS: Dict[str, Dict[str, Any]] = {}
+ORDERS: List[Dict[str, Any]] = []
 
-CANCEL_WORDS = {
-    "cancel",
-    "বাতিল",
-    "অর্ডার বাতিল",
-}
-
-ORDER_WORDS = (
-    "অর্ডার",
-    "order",
-    "নিতে চাই",
-    "কিনতে চাই",
-)
-
-BUSINESS_RULES = f"""
-আপনি “{BOT_NAME}”, একটি Facebook Page-এর বাংলা বিক্রয় সহকারী।
-
-Admin: {ADMIN_NAME}
-Call/WhatsApp: {ADMIN_PHONE}
-লোকেশন: ভৈরব, কিশোরগঞ্জ।
-
-Steadfast Courier-এর মাধ্যমে সারা বাংলাদেশে সাধারণত ২–৪ দিনে ডেলিভারি।
-সাধারণ ডেলিভারি চার্জ ৳১০০।
-Google Sheet-এ আলাদা চার্জ থাকলে সেটিই ব্যবহার করবেন।
-Cash on Delivery আছে।
-কোনো পণ্যকে Pre-order বলবেন না।
-Google Sheet ছাড়া দাম, স্টক, রঙ, ফিচার বা ওয়ারেন্টি বানাবেন না।
-তথ্য নিশ্চিত না হলে অ্যাডমিনের সহায়তা নিতে বলবেন।
-উত্তর সংক্ষিপ্ত, স্বাভাবিক এবং ভদ্র বাংলায় দেবেন।
-"""
+_sessions_lock = threading.Lock()
+_orders_lock = threading.Lock()
 
 
 # =========================================================
@@ -178,11 +382,6 @@ MESSAGE_CACHE_SECONDS = 60 * 60
 
 
 def is_duplicate_message(message_id: str) -> bool:
-    """
-    একই Messenger message একাধিকবার webhook-এ এলে
-    পুনরায় process করা বন্ধ করে।
-    """
-
     if not message_id:
         return False
 
@@ -211,36 +410,17 @@ def is_duplicate_message(message_id: str) -> bool:
 # =========================================================
 
 def norm(value: Any) -> str:
-    return re.sub(
-        r"\s+",
-        " ",
-        str(value or "").strip(),
-    ).casefold()
+    return re.sub(r"\s+", " ", str(value or "").strip()).casefold()
 
 
 def number(value: Any) -> float:
-    match = re.search(
-        r"\d+(?:\.\d+)?",
-        str(value or "").replace(",", ""),
-    )
-
+    match = re.search(r"\d+(?:\.\d+)?", str(value or "").replace(",", ""))
     return float(match.group()) if match else 0.0
 
 
 def money(value: float) -> str:
     value = float(value or 0)
-
-    if value.is_integer():
-        return f"৳{int(value)}"
-
-    return f"৳{value:.2f}"
-
-
-def google_configured() -> bool:
-    return bool(
-        GOOGLE_SHEET_ID
-        and GOOGLE_SERVICE_ACCOUNT_JSON
-    )
+    return f"৳{int(value)}" if value.is_integer() else f"৳{value:.2f}"
 
 
 def openai_configured() -> bool:
@@ -255,27 +435,14 @@ def messenger_configured() -> bool:
 # META SIGNATURE VERIFICATION
 # =========================================================
 
-def verify_signature(
-    raw_body: bytes,
-    signature_header: Optional[str],
-) -> bool:
-    """
-    Meta webhook signature যাচাই করে।
-    META_APP_SECRET না থাকলে development অবস্থায় request allow করে,
-    তবে Render-এ META_APP_SECRET যোগ করা উচিত।
-    """
-
+def verify_signature(raw_body: bytes, signature_header: Optional[str]) -> bool:
     if not META_APP_SECRET:
         logger.warning(
-            "META_APP_SECRET is missing. "
-            "Webhook signature verification is disabled."
+            "META_APP_SECRET is missing. Webhook signature verification is disabled."
         )
         return True
 
-    if (
-        not signature_header
-        or not signature_header.startswith("sha256=")
-    ):
+    if not signature_header or not signature_header.startswith("sha256="):
         return False
 
     expected_signature = hmac.new(
@@ -286,10 +453,7 @@ def verify_signature(
 
     received_signature = signature_header.split("=", 1)[1]
 
-    return hmac.compare_digest(
-        expected_signature,
-        received_signature,
-    )
+    return hmac.compare_digest(expected_signature, received_signature)
 
 
 # =========================================================
@@ -298,149 +462,29 @@ def verify_signature(
 
 def get_openai_client() -> OpenAI:
     if not OPENAI_API_KEY:
-        raise RuntimeError(
-            "OPENAI_API_KEY is missing from Render Environment Variables."
-        )
-
+        raise RuntimeError("OPENAI_API_KEY is missing.")
     return OpenAI(api_key=OPENAI_API_KEY)
 
 
 # =========================================================
-# GOOGLE SHEETS
+# PRODUCT & FAQ SEARCH
 # =========================================================
 
-def parse_google_credentials() -> Dict[str, Any]:
-    if not GOOGLE_SERVICE_ACCOUNT_JSON:
-        raise RuntimeError(
-            "GOOGLE_SERVICE_ACCOUNT_JSON is missing."
+def product_search_text(product: Dict[str, Any]) -> str:
+    return norm(
+        " ".join(
+            [
+                product.get("name", ""),
+                product.get("category", ""),
+                " ".join(product.get("keywords", [])),
+                product.get("details", ""),
+                " ".join(product.get("features", [])),
+            ]
         )
-
-    try:
-        data = json.loads(GOOGLE_SERVICE_ACCOUNT_JSON)
-    except json.JSONDecodeError as error:
-        raise RuntimeError(
-            "GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON."
-        ) from error
-
-    if not isinstance(data, dict):
-        raise RuntimeError(
-            "GOOGLE_SERVICE_ACCOUNT_JSON must contain a JSON object."
-        )
-
-    return data
-
-
-def gs_client():
-    if not GOOGLE_SHEET_ID:
-        raise RuntimeError(
-            "GOOGLE_SHEET_ID is missing."
-        )
-
-    credentials_info = parse_google_credentials()
-
-    scopes = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive",
-    ]
-
-    credentials = Credentials.from_service_account_info(
-        credentials_info,
-        scopes=scopes,
     )
 
-    return gspread.authorize(credentials)
 
-
-def workbook():
-    return gs_client().open_by_key(GOOGLE_SHEET_ID)
-
-
-def ensure_sheet(
-    name: str,
-    headers: List[str],
-):
-    book = workbook()
-
-    try:
-        worksheet = book.worksheet(name)
-
-    except gspread.WorksheetNotFound:
-        worksheet = book.add_worksheet(
-            title=name,
-            rows=1000,
-            cols=max(20, len(headers)),
-        )
-
-    if not worksheet.row_values(1):
-        worksheet.append_row(
-            headers,
-            value_input_option="USER_ENTERED",
-        )
-
-    return worksheet
-
-
-def products() -> List[Dict[str, str]]:
-    worksheet = ensure_sheet(
-        PRODUCTS_SHEET,
-        PRODUCT_HEADERS,
-    )
-
-    rows = worksheet.get_all_records()
-    result: List[Dict[str, str]] = []
-
-    for row in rows:
-        product = {
-            str(key).strip(): str(value).strip()
-            for key, value in row.items()
-        }
-
-        product_name = product.get("Product Name")
-        status = norm(product.get("Status"))
-
-        if (
-            product_name
-            and status not in {
-                "inactive",
-                "off",
-                "disabled",
-            }
-        ):
-            result.append(product)
-
-    return result
-
-
-def safe_products() -> List[Dict[str, str]]:
-    """
-    Google Sheet error হলে পুরো bot crash না করে
-    খালি catalog ফিরিয়ে দেয়।
-    """
-
-    if not google_configured():
-        logger.warning(
-            "Google Sheets configuration is incomplete."
-        )
-        return []
-
-    try:
-        return products()
-
-    except Exception:
-        logger.exception(
-            "Could not load products from Google Sheet."
-        )
-        return []
-
-
-# =========================================================
-# PRODUCT SEARCH
-# =========================================================
-
-def find_product(
-    query: str,
-    catalog: List[Dict[str, str]],
-) -> Optional[Dict[str, str]]:
+def find_product(query: str) -> Optional[Dict[str, Any]]:
     query_normalized = norm(query)
 
     if not query_normalized:
@@ -449,154 +493,96 @@ def find_product(
     best_product = None
     best_score = 0.0
 
-    for product in catalog:
-        product_name = norm(
-            product.get("Product Name")
-        )
-
-        keywords = [
-            norm(item)
-            for item in re.split(
-                r"[,;\n|]+",
-                product.get("Keywords", ""),
-            )
-            if item.strip()
-        ]
-
-        searchable_text = norm(
-            " ".join(
-                [
-                    product.get("Product Name", ""),
-                    product.get("Keywords", ""),
-                    product.get("Category", ""),
-                    product.get("Details", ""),
-                    product.get("Features", ""),
-                ]
-            )
-        )
+    for product in PRODUCTS:
+        searchable_text = product_search_text(product)
+        product_name = norm(product.get("name"))
+        keywords = [norm(item) for item in product.get("keywords", [])]
 
         score = 0.0
 
         if product_name and product_name in query_normalized:
             score = 1.0
-
         elif query_normalized in searchable_text:
             score = 0.94
-
         else:
-            terms = keywords + (
-                [product_name]
-                if product_name
-                else []
-            )
-
-            for keyword in terms:
-                if not keyword:
-                    continue
-
-                if (
-                    keyword in query_normalized
-                    or query_normalized in keyword
-                ):
+            for keyword in keywords + ([product_name] if product_name else []):
+                if keyword and (keyword in query_normalized or query_normalized in keyword):
                     score = max(score, 0.90)
 
-                score = max(
-                    score,
-                    SequenceMatcher(
-                        None,
-                        query_normalized,
-                        keyword,
-                    ).ratio(),
-                )
+                if keyword:
+                    score = max(
+                        score,
+                        SequenceMatcher(None, query_normalized, keyword).ratio(),
+                    )
 
-            query_tokens = set(
-                query_normalized.split()
-            )
-
-            product_tokens = set(
-                searchable_text.split()
-            )
+            query_tokens = set(query_normalized.split())
+            product_tokens = set(searchable_text.split())
 
             if query_tokens:
-                overlap = (
-                    len(query_tokens & product_tokens)
-                    / len(query_tokens)
+                score = max(
+                    score,
+                    len(query_tokens & product_tokens) / len(query_tokens),
                 )
-
-                score = max(score, overlap)
 
         if score > best_score:
             best_product = product
             best_score = score
 
-    if best_score >= 0.48:
-        return best_product
-
-    return None
+    return best_product if best_score >= 0.48 else None
 
 
-def product_by_name(
-    name: str,
-    catalog: List[Dict[str, str]],
-) -> Optional[Dict[str, str]]:
-    for product in catalog:
-        if norm(product.get("Product Name")) == norm(name):
-            return product
+def find_faq(query: str) -> Optional[str]:
+    query_normalized = norm(query)
 
-    return find_product(name, catalog)
+    if not query_normalized:
+        return None
+
+    best_answer = None
+    best_score = 0.0
+
+    for item in FAQS:
+        keywords = [norm(keyword) for keyword in item.get("keywords", [])]
+        score = 0.0
+
+        for keyword in keywords:
+            if keyword in query_normalized or query_normalized in keyword:
+                score = max(score, 0.95)
+
+            score = max(
+                score,
+                SequenceMatcher(None, query_normalized, keyword).ratio(),
+            )
+
+        if score > best_score:
+            best_answer = item.get("answer")
+            best_score = score
+
+    return best_answer if best_score >= 0.56 else None
 
 
-def current_price(product: Dict[str, str]) -> float:
-    return (
-        number(product.get("Offer Price"))
-        or number(product.get("Price"))
-    )
+def current_price(product: Dict[str, Any]) -> float:
+    return float(product.get("offer_price") or product.get("price") or 0)
 
 
-def delivery_charge(product: Dict[str, str]) -> float:
-    charge_text = norm(
-        product.get("Delivery Charge")
-    )
-
-    if (
-        "free" in charge_text
-        or "ফ্রি" in charge_text
-    ):
-        return 0.0
-
-    return (
-        number(product.get("Delivery Charge"))
-        or 100.0
-    )
+def delivery_charge(product: Dict[str, Any]) -> float:
+    return float(product.get("delivery_charge") or 0)
 
 
 # =========================================================
-# SEND MESSENGER MESSAGES
+# MESSENGER SEND
 # =========================================================
 
-def send_message(
-    user_id: str,
-    message: Dict[str, Any],
-) -> None:
+def send_message(user_id: str, message: Dict[str, Any]) -> None:
     if not PAGE_ACCESS_TOKEN:
-        raise RuntimeError(
-            "PAGE_ACCESS_TOKEN is missing."
-        )
+        raise RuntimeError("PAGE_ACCESS_TOKEN is missing.")
 
-    url = (
-        f"https://graph.facebook.com/"
-        f"{GRAPH_API_VERSION}/me/messages"
-    )
+    url = f"https://graph.facebook.com/{GRAPH_API_VERSION}/me/messages"
 
     response = HTTP.post(
         url,
-        params={
-            "access_token": PAGE_ACCESS_TOKEN,
-        },
+        params={"access_token": PAGE_ACCESS_TOKEN},
         json={
-            "recipient": {
-                "id": user_id,
-            },
+            "recipient": {"id": user_id},
             "messaging_type": "RESPONSE",
             "message": message,
         },
@@ -613,32 +599,16 @@ def send_message(
     response.raise_for_status()
 
 
-def send_text(
-    user_id: str,
-    text: str,
-) -> None:
+def send_text(user_id: str, text: str) -> None:
     cleaned_text = str(text or "").strip()
-
-    if not cleaned_text:
-        return
-
-    send_message(
-        user_id,
-        {
-            "text": cleaned_text[:2000],
-        },
-    )
+    if cleaned_text:
+        send_message(user_id, {"text": cleaned_text[:2000]})
 
 
-def send_image(
-    user_id: str,
-    image_url: str,
-) -> None:
+def send_image(user_id: str, image_url: str) -> None:
     image_url = str(image_url or "").strip()
 
-    if not image_url.startswith(
-        ("http://", "https://")
-    ):
+    if not image_url.startswith(("http://", "https://")):
         return
 
     send_message(
@@ -659,77 +629,41 @@ def send_image(
 # PRODUCT RESPONSE
 # =========================================================
 
-def product_text(
-    product: Dict[str, str],
-) -> str:
-    price = current_price(product)
-
+def product_text(product: Dict[str, Any]) -> str:
     lines = [
-        f"🛍️ {product.get('Product Name')}",
-        f"💰 মূল্য: {money(price)}",
+        f"🛍️ {product.get('name')}",
+        f"💰 মূল্য: {money(current_price(product))}",
+        f"📦 স্টক: {product.get('stock', 'In Stock')}",
     ]
 
-    if product.get("Stock"):
-        lines.append(
-            f"📦 স্টক: {product.get('Stock')}"
-        )
+    if product.get("details"):
+        lines.append(product["details"])
 
-    features = [
-        item.strip()
-        for item in re.split(
-            r"[,;\n|]+",
-            product.get("Features", ""),
-        )
-        if item.strip()
-    ]
-
+    features = product.get("features", [])
     if features:
         lines.append("✨ প্রধান ফিচার:")
+        lines.extend(f"• {feature}" for feature in features[:8])
 
-        lines.extend(
-            f"• {feature}"
-            for feature in features[:6]
-        )
+    if product.get("box_items"):
+        lines.append("📦 বক্সে যা পাবেন:")
+        lines.extend(f"• {item}" for item in product["box_items"])
 
-    elif product.get("Details"):
-        lines.append(
-            product.get("Details", "")[:600]
-        )
+    colors = product.get("colors", [])
+    if colors:
+        lines.append("🎨 রঙ: " + ", ".join(colors))
 
-    if product.get("Colors"):
-        lines.append(
-            f"🎨 রঙ: {product.get('Colors')}"
-        )
+    if product.get("warranty"):
+        lines.append(f"🛡️ ওয়ারেন্টি: {product.get('warranty')}")
 
-    if product.get("Warranty"):
-        lines.append(
-            f"🛡️ ওয়ারেন্টি: "
-            f"{product.get('Warranty')}"
-        )
-
-    delivery_time = (
-        product.get("Delivery Time")
-        or "২–৪ দিন"
-    )
-
-    lines.append(
-        f"🚚 ডেলিভারি: {delivery_time}"
-    )
+    lines.append(f"🚚 ডেলিভারি: {product.get('delivery_time', '2-4 Days')}")
 
     charge = delivery_charge(product)
-
     lines.append(
         "💳 ডেলিভারি চার্জ: "
-        + (
-            "ফ্রি"
-            if charge == 0
-            else money(charge)
-        )
+        + ("ফ্রি" if charge == 0 else money(charge))
     )
 
-    lines.append(
-        '\nঅর্ডার করতে “অর্ডার করতে চাই” লিখুন।'
-    )
+    lines.append('\nঅর্ডার করতে “অর্ডার করতে চাই” লিখুন।')
 
     return "\n".join(lines)
 
@@ -738,109 +672,22 @@ def product_text(
 # SESSION MANAGEMENT
 # =========================================================
 
-def get_session(
-    user_id: str,
-) -> Dict[str, str]:
-    worksheet = ensure_sheet(
-        SESSIONS_SHEET,
-        SESSION_HEADERS,
-    )
-
-    for row in worksheet.get_all_records():
-        row_user_id = str(
-            row.get("Facebook User ID", "")
-        ).strip()
-
-        if row_user_id == user_id:
-            return {
-                str(key): str(value).strip()
-                for key, value in row.items()
-            }
-
-    return {
-        "Facebook User ID": user_id,
-        "Stage": "",
-    }
+def get_session(user_id: str) -> Dict[str, Any]:
+    with _sessions_lock:
+        return dict(SESSIONS.get(user_id, {"stage": "", "user_id": user_id}))
 
 
-def save_session(
-    user_id: str,
-    updates: Dict[str, Any],
-) -> None:
-    worksheet = ensure_sheet(
-        SESSIONS_SHEET,
-        SESSION_HEADERS,
-    )
-
-    rows = worksheet.get_all_records()
-
-    row_index = None
-    previous: Dict[str, str] = {}
-
-    for index, row in enumerate(
-        rows,
-        start=2,
-    ):
-        row_user_id = str(
-            row.get("Facebook User ID", "")
-        ).strip()
-
-        if row_user_id == user_id:
-            row_index = index
-
-            previous = {
-                str(key): str(value).strip()
-                for key, value in row.items()
-            }
-
-            break
-
-    merged = {
-        **previous,
-        **{
-            key: str(value)
-            for key, value in updates.items()
-        },
-    }
-
-    merged["Facebook User ID"] = user_id
-    merged["Updated At"] = (
-        datetime.now(timezone.utc).isoformat()
-    )
-
-    values = [
-        merged.get(header, "")
-        for header in SESSION_HEADERS
-    ]
-
-    if row_index:
-        worksheet.update(
-            f"A{row_index}:M{row_index}",
-            [values],
-            value_input_option="USER_ENTERED",
-        )
-
-    else:
-        worksheet.append_row(
-            values,
-            value_input_option="USER_ENTERED",
-        )
+def save_session(user_id: str, updates: Dict[str, Any]) -> None:
+    with _sessions_lock:
+        current = SESSIONS.get(user_id, {"stage": "", "user_id": user_id})
+        current.update(updates)
+        current["updated_at"] = datetime.now(timezone.utc).isoformat()
+        SESSIONS[user_id] = current
 
 
 def clear_session(user_id: str) -> None:
-    empty_values = {
-        header: ""
-        for header in SESSION_HEADERS
-        if header not in {
-            "Facebook User ID",
-            "Updated At",
-        }
-    }
-
-    save_session(
-        user_id,
-        empty_values,
-    )
+    with _sessions_lock:
+        SESSIONS.pop(user_id, None)
 
 
 # =========================================================
@@ -849,90 +696,49 @@ def clear_session(user_id: str) -> None:
 
 def valid_mobile(text: str) -> bool:
     digits = re.sub(r"\D", "", text)
-
-    return (
-        len(digits) in {10, 11, 13}
-        and (
-            digits.startswith("01")
-            or digits.startswith("8801")
-        )
+    return len(digits) in {10, 11, 13} and (
+        digits.startswith("01") or digits.startswith("8801")
     )
 
 
-def order_summary(
-    session: Dict[str, str],
-    product: Dict[str, str],
-) -> str:
-    quantity = max(
-        int(number(session.get("Quantity")) or 1),
-        1,
-    )
-
+def order_summary(session: Dict[str, Any], product: Dict[str, Any]) -> str:
+    quantity = max(int(number(session.get("quantity")) or 1), 1)
     unit_price = current_price(product)
     charge = delivery_charge(product)
     total = unit_price * quantity + charge
 
     lines = [
         "📦 অর্ডার সারাংশ",
-        f"প্রোডাক্ট: {product.get('Product Name')}",
+        f"প্রোডাক্ট: {product.get('name')}",
     ]
 
-    if session.get("Color"):
-        lines.append(
-            f"রঙ: {session.get('Color')}"
-        )
+    if session.get("color"):
+        lines.append(f"রঙ: {session.get('color')}")
 
     lines.extend(
         [
             f"পরিমাণ: {quantity}",
             f"প্রতি পিস: {money(unit_price)}",
-            (
-                "ডেলিভারি চার্জ: ফ্রি"
-                if charge == 0
-                else (
-                    "ডেলিভারি চার্জ: "
-                    f"{money(charge)}"
-                )
-            ),
+            f"ডেলিভারি চার্জ: {'ফ্রি' if charge == 0 else money(charge)}",
             f"মোট: {money(total)}",
             "",
-            f"নাম: {session.get('Customer Name')}",
-            f"মোবাইল: {session.get('Mobile')}",
-            (
-                "এলাকা/গ্রাম: "
-                f"{session.get('Area/Village')}"
-            ),
-            f"থানা: {session.get('Thana')}",
-            f"জেলা: {session.get('District')}",
-            (
-                "রিসিভ করবেন: "
-                f"{session.get('Receive From')}"
-            ),
-            (
-                "সম্পূর্ণ ঠিকানা: "
-                f"{session.get('Full Address')}"
-            ),
+            f"নাম: {session.get('customer_name', '')}",
+            f"মোবাইল: {session.get('mobile', '')}",
+            f"এলাকা/গ্রাম: {session.get('area', '')}",
+            f"থানা: {session.get('thana', '')}",
+            f"জেলা: {session.get('district', '')}",
+            f"রিসিভ করবেন: {session.get('receive_from', '')}",
+            f"সম্পূর্ণ ঠিকানা: {session.get('full_address', '')}",
             "",
-            (
-                'সব ঠিক থাকলে “Confirm” '
-                'বা “কনফার্ম” লিখুন।'
-            ),
+            'সব ঠিক থাকলে “Confirm” বা “কনফার্ম” লিখুন।',
         ]
     )
 
     return "\n".join(lines)
 
 
-def save_order(
-    user_id: str,
-    session: Dict[str, str],
-    product: Dict[str, str],
-) -> str:
-    quantity = max(
-        int(number(session.get("Quantity")) or 1),
-        1,
-    )
-
+def save_order(user_id: str, session: Dict[str, Any], product: Dict[str, Any]) -> str:
+    quantity = max(int(number(session.get("quantity")) or 1), 1)
     unit_price = current_price(product)
     charge = delivery_charge(product)
 
@@ -941,62 +747,47 @@ def save_order(
         f"{uuid.uuid4().hex[:6].upper()}"
     )
 
-    row = [
-        order_id,
-        datetime.now(timezone.utc).isoformat(),
-        user_id,
-        session.get("Customer Name", ""),
-        session.get("Mobile", ""),
-        session.get("Area/Village", ""),
-        session.get("Thana", ""),
-        session.get("District", ""),
-        session.get("Receive From", ""),
-        session.get("Full Address", ""),
-        product.get("Product Name", ""),
-        session.get("Color", ""),
-        quantity,
-        unit_price,
-        charge,
-        unit_price * quantity + charge,
-        "New - Admin Review",
-    ]
+    order = {
+        "order_id": order_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "facebook_user_id": user_id,
+        "customer_name": session.get("customer_name", ""),
+        "mobile": session.get("mobile", ""),
+        "area": session.get("area", ""),
+        "thana": session.get("thana", ""),
+        "district": session.get("district", ""),
+        "receive_from": session.get("receive_from", ""),
+        "full_address": session.get("full_address", ""),
+        "product_name": product.get("name", ""),
+        "color": session.get("color", ""),
+        "quantity": quantity,
+        "unit_price": unit_price,
+        "delivery_charge": charge,
+        "total": unit_price * quantity + charge,
+        "status": "New - Admin Review",
+    }
 
-    worksheet = ensure_sheet(
-        ORDERS_SHEET,
-        ORDER_HEADERS,
-    )
+    with _orders_lock:
+        ORDERS.append(order)
 
-    worksheet.append_row(
-        row,
-        value_input_option="USER_ENTERED",
-    )
+    logger.info("NEW ORDER: %s", json.dumps(order, ensure_ascii=False))
 
     return order_id
 
 
 # =========================================================
-# IMAGE AND AI
+# IMAGE + AI
 # =========================================================
 
-def image_from_event(
-    event: Dict[str, Any],
-) -> Optional[str]:
+def image_from_event(event: Dict[str, Any]) -> Optional[str]:
     message = event.get("message") or {}
 
-    attachments = (
-        message.get("attachments") or []
-    )
-
-    for attachment in attachments:
-        if attachment.get("type") != "image":
-            continue
-
-        payload = attachment.get("payload") or {}
-
-        image_url = payload.get("url")
-
-        if image_url:
-            return str(image_url)
+    for attachment in message.get("attachments", []) or []:
+        if attachment.get("type") == "image":
+            payload = attachment.get("payload") or {}
+            image_url = payload.get("url")
+            if image_url:
+                return str(image_url)
 
     return None
 
@@ -1007,9 +798,8 @@ def describe_image(image_url: str) -> str:
     response = client.responses.create(
         model=OPENAI_MODEL,
         instructions=(
-            "ছবির বিক্রয়যোগ্য প্রোডাক্টটি শনাক্ত করে "
-            "সংক্ষিপ্ত বাংলা/ইংরেজি কীওয়ার্ড লিখুন। "
-            "নিশ্চিত না হলে অনুমান করবেন না।"
+            "ছবির বিক্রয়যোগ্য প্রোডাক্টটি শনাক্ত করে সংক্ষিপ্ত বাংলা/ইংরেজি "
+            "কীওয়ার্ড লিখুন। নিশ্চিত না হলে অনুমান করবেন না।"
         ),
         input=[
             {
@@ -1017,10 +807,7 @@ def describe_image(image_url: str) -> str:
                 "content": [
                     {
                         "type": "input_text",
-                        "text": (
-                            "এই ছবির প্রোডাক্টটি "
-                            "শনাক্ত করুন।"
-                        ),
+                        "text": "এই ছবির প্রোডাক্টটি শনাক্ত করুন।",
                     },
                     {
                         "type": "input_image",
@@ -1032,16 +819,15 @@ def describe_image(image_url: str) -> str:
         max_output_tokens=160,
     )
 
-    return (
-        response.output_text or ""
-    ).strip()
+    return (response.output_text or "").strip()
 
 
-def ai_reply(
-    text: str,
-    catalog: List[Dict[str, str]],
-) -> str:
+def ai_reply(text: str) -> str:
     if not OPENAI_API_KEY:
+        faq_answer = find_faq(text)
+        if faq_answer:
+            return faq_answer
+
         return (
             "আপনি কোন প্রোডাক্ট সম্পর্কে জানতে চান? "
             "প্রোডাক্টের নাম বা ছবি পাঠান।"
@@ -1049,25 +835,18 @@ def ai_reply(
 
     compact_catalog = [
         {
-            "name": product.get("Product Name"),
-            "keywords": product.get("Keywords"),
-            "price": (
-                product.get("Offer Price")
-                or product.get("Price")
-            ),
-            "details": product.get("Details"),
-            "features": product.get("Features"),
-            "colors": product.get("Colors"),
-            "warranty": product.get("Warranty"),
-            "delivery_charge": product.get(
-                "Delivery Charge"
-            ),
-            "delivery_time": product.get(
-                "Delivery Time"
-            ),
-            "stock": product.get("Stock"),
+            "name": product.get("name"),
+            "keywords": product.get("keywords"),
+            "price": current_price(product),
+            "details": product.get("details"),
+            "features": product.get("features"),
+            "colors": product.get("colors"),
+            "warranty": product.get("warranty"),
+            "delivery_charge": delivery_charge(product),
+            "delivery_time": product.get("delivery_time"),
+            "stock": product.get("stock"),
         }
-        for product in catalog[:100]
+        for product in PRODUCTS
     ]
 
     client = get_openai_client()
@@ -1075,22 +854,29 @@ def ai_reply(
     response = client.responses.create(
         model=OPENAI_MODEL,
         instructions=(
-            BUSINESS_RULES
+            f"""
+আপনি “{BOT_NAME}”, একটি Facebook Page-এর বাংলা বিক্রয় সহকারী।
+
+Admin: {ADMIN_NAME}
+Call/WhatsApp: {ADMIN_PHONE}
+লোকেশন: ভৈরব, কিশোরগঞ্জ।
+Steadfast Courier-এর মাধ্যমে সারা বাংলাদেশে সাধারণত ২–৪ দিনে ডেলিভারি।
+সাধারণ ডেলিভারি চার্জ ৳১০০।
+Cash on Delivery আছে।
+কোনো পণ্যকে Pre-order বলবেন না।
+দাম, স্টক, রঙ, ফিচার বা ওয়ারেন্টি বানাবেন না।
+উত্তর সংক্ষিপ্ত, স্বাভাবিক এবং ভদ্র বাংলায় দেবেন।
+"""
             + "\nProduct Catalog:\n"
-            + json.dumps(
-                compact_catalog,
-                ensure_ascii=False,
-            )
+            + json.dumps(compact_catalog, ensure_ascii=False)
+            + "\nFAQ:\n"
+            + json.dumps(FAQS, ensure_ascii=False)
         ),
         input=text,
         max_output_tokens=320,
     )
 
-    reply = (
-        response.output_text or ""
-    ).strip()
-
-    return reply or (
+    return (response.output_text or "").strip() or (
         "প্রোডাক্টের নাম বা ছবি পাঠান।"
     )
 
@@ -1102,334 +888,225 @@ def ai_reply(
 def order_flow(
     user_id: str,
     text: str,
-    catalog: List[Dict[str, str]],
-    selected: Optional[Dict[str, str]],
+    selected_product: Optional[Dict[str, Any]],
 ) -> bool:
-    if not google_configured():
-        return False
-
     session = get_session(user_id)
-
-    stage = norm(
-        session.get("Stage")
-    )
-
+    stage = norm(session.get("stage"))
     normalized_text = norm(text)
 
     if normalized_text in CANCEL_WORDS:
         clear_session(user_id)
-
-        send_text(
-            user_id,
-            "অর্ডার প্রক্রিয়া বাতিল করা হয়েছে।",
-        )
-
+        send_text(user_id, "অর্ডার প্রক্রিয়া বাতিল করা হয়েছে।")
         return True
 
-    if (
-        not stage
-        and any(
-            word in normalized_text
-            for word in ORDER_WORDS
-        )
-    ):
-        product = (
-            selected
-            or product_by_name(
-                session.get("Product Name", ""),
-                catalog,
-            )
-        )
+    if not stage and any(word in normalized_text for word in ORDER_WORDS):
+        product = selected_product
+
+        if not product and session.get("product_name"):
+            product = find_product(session.get("product_name", ""))
 
         if not product:
-            save_session(
-                user_id,
-                {
-                    "Stage": "waiting_product",
-                },
-            )
-
-            send_text(
-                user_id,
-                (
-                    "কোন প্রোডাক্টটি অর্ডার "
-                    "করতে চান? নাম বা ছবি পাঠান।"
-                ),
-            )
-
+            save_session(user_id, {"stage": "waiting_product"})
+            send_text(user_id, "কোন প্রোডাক্টটি অর্ডার করতে চান? নাম লিখুন।")
             return True
 
         save_session(
             user_id,
             {
-                "Stage": "waiting_color_or_quantity",
-                "Product Name": product.get(
-                    "Product Name",
-                    "",
-                ),
+                "stage": "waiting_color_or_quantity",
+                "product_name": product.get("name", ""),
             },
         )
 
-        if product.get("Colors"):
-            prompt = (
-                "পছন্দের রঙ লিখুন: "
-                f"{product.get('Colors')}"
+        if product.get("colors"):
+            send_text(
+                user_id,
+                "পছন্দের রঙ লিখুন: " + ", ".join(product.get("colors", [])),
             )
         else:
-            prompt = (
-                "কয়টি নিতে চান? সংখ্যা লিখুন।"
-            )
+            send_text(user_id, "কয়টি নিতে চান? সংখ্যা লিখুন।")
 
-        send_text(user_id, prompt)
         return True
 
     if stage == "waiting_product":
-        if not selected:
-            send_text(
-                user_id,
-                (
-                    "প্রোডাক্টটি পাইনি। "
-                    "সঠিক নাম বা পরিষ্কার ছবি পাঠান।"
-                ),
-            )
-
+        if not selected_product:
+            send_text(user_id, "প্রোডাক্টটি পাইনি। সঠিক নাম লিখুন।")
             return True
 
         save_session(
             user_id,
             {
-                "Stage": "waiting_color_or_quantity",
-                "Product Name": selected.get(
-                    "Product Name",
-                    "",
-                ),
+                "stage": "waiting_color_or_quantity",
+                "product_name": selected_product.get("name", ""),
             },
         )
 
-        if selected.get("Colors"):
-            prompt = (
+        if selected_product.get("colors"):
+            send_text(
+                user_id,
                 "পছন্দের রঙ লিখুন: "
-                f"{selected.get('Colors')}"
+                + ", ".join(selected_product.get("colors", [])),
             )
         else:
-            prompt = "কয়টি নিতে চান?"
+            send_text(user_id, "কয়টি নিতে চান?")
 
-        send_text(user_id, prompt)
         return True
 
     if stage == "waiting_color_or_quantity":
-        product = product_by_name(
-            session.get("Product Name", ""),
-            catalog,
-        )
+        product = find_product(session.get("product_name", ""))
 
-        if (
-            product
-            and product.get("Colors")
-            and not session.get("Color")
-        ):
+        if product and product.get("colors") and not session.get("color"):
             save_session(
                 user_id,
                 {
-                    "Color": text,
-                    "Stage": "waiting_quantity",
+                    "color": text,
+                    "stage": "waiting_quantity",
                 },
             )
-
-            send_text(
-                user_id,
-                "কয়টি নিতে চান? সংখ্যা লিখুন।",
-            )
-
+            send_text(user_id, "কয়টি নিতে চান? সংখ্যা লিখুন।")
         else:
-            quantity = max(
-                int(number(text) or 1),
-                1,
-            )
-
             save_session(
                 user_id,
                 {
-                    "Quantity": quantity,
-                    "Stage": "waiting_name",
+                    "quantity": max(int(number(text) or 1), 1),
+                    "stage": "waiting_name",
                 },
             )
-
-            send_text(
-                user_id,
-                "আপনার নাম লিখুন।",
-            )
+            send_text(user_id, "আপনার নাম লিখুন।")
 
         return True
 
-    steps = {
-        "waiting_quantity": (
-            "Quantity",
-            max(int(number(text) or 1), 1),
-            "waiting_name",
-            "আপনার নাম লিখুন।",
-        ),
-        "waiting_name": (
-            "Customer Name",
-            text,
-            "waiting_mobile",
-            "আপনার মোবাইল নম্বর লিখুন।",
-        ),
-        "waiting_area": (
-            "Area/Village",
-            text,
-            "waiting_thana",
-            "আপনার থানার নাম লিখুন।",
-        ),
-        "waiting_thana": (
-            "Thana",
-            text,
-            "waiting_district",
-            "আপনার জেলার নাম লিখুন।",
-        ),
-        "waiting_district": (
-            "District",
-            text,
-            "waiting_receive",
-            "কোথা থেকে রিসিভ করবেন?",
-        ),
-        "waiting_receive": (
-            "Receive From",
-            text,
-            "waiting_address",
-            "সম্পূর্ণ ঠিকানা লিখুন।",
-        ),
-    }
-
-    if stage in steps:
-        key, value, next_stage, prompt = steps[stage]
-
+    if stage == "waiting_quantity":
         save_session(
             user_id,
             {
-                key: value,
-                "Stage": next_stage,
+                "quantity": max(int(number(text) or 1), 1),
+                "stage": "waiting_name",
             },
         )
+        send_text(user_id, "আপনার নাম লিখুন।")
+        return True
 
-        send_text(user_id, prompt)
+    if stage == "waiting_name":
+        save_session(
+            user_id,
+            {
+                "customer_name": text,
+                "stage": "waiting_mobile",
+            },
+        )
+        send_text(user_id, "আপনার মোবাইল নম্বর লিখুন।")
         return True
 
     if stage == "waiting_mobile":
         if not valid_mobile(text):
-            send_text(
-                user_id,
-                (
-                    "সঠিক মোবাইল নম্বর লিখুন—"
-                    "যেমন: 01XXXXXXXXX"
-                ),
-            )
-
+            send_text(user_id, "সঠিক মোবাইল নম্বর লিখুন—যেমন: 01XXXXXXXXX")
             return True
 
         save_session(
             user_id,
             {
-                "Mobile": text,
-                "Stage": "waiting_area",
+                "mobile": text,
+                "stage": "waiting_area",
             },
         )
+        send_text(user_id, "এলাকা বা গ্রামের নাম লিখুন।")
+        return True
 
-        send_text(
+    if stage == "waiting_area":
+        save_session(
             user_id,
-            "এলাকা বা গ্রামের নাম লিখুন।",
+            {
+                "area": text,
+                "stage": "waiting_thana",
+            },
         )
+        send_text(user_id, "আপনার থানার নাম লিখুন।")
+        return True
 
+    if stage == "waiting_thana":
+        save_session(
+            user_id,
+            {
+                "thana": text,
+                "stage": "waiting_district",
+            },
+        )
+        send_text(user_id, "আপনার জেলার নাম লিখুন।")
+        return True
+
+    if stage == "waiting_district":
+        save_session(
+            user_id,
+            {
+                "district": text,
+                "stage": "waiting_receive",
+            },
+        )
+        send_text(user_id, "কোথা থেকে রিসিভ করবেন? যেমন: বাসা/অফিস")
+        return True
+
+    if stage == "waiting_receive":
+        save_session(
+            user_id,
+            {
+                "receive_from": text,
+                "stage": "waiting_address",
+            },
+        )
+        send_text(user_id, "সম্পূর্ণ ঠিকানা লিখুন।")
         return True
 
     if stage == "waiting_address":
         save_session(
             user_id,
             {
-                "Full Address": text,
-                "Stage": "waiting_confirm",
+                "full_address": text,
+                "stage": "waiting_confirm",
             },
         )
 
         fresh_session = get_session(user_id)
-
-        product = product_by_name(
-            fresh_session.get(
-                "Product Name",
-                "",
-            ),
-            catalog,
-        )
+        product = find_product(fresh_session.get("product_name", ""))
 
         if not product:
             send_text(
                 user_id,
-                (
-                    "প্রোডাক্টের তথ্য পাওয়া যায়নি। "
-                    f"Admin {ADMIN_NAME}: {ADMIN_PHONE}"
-                ),
+                f"প্রোডাক্টের তথ্য পাওয়া যায়নি। Admin {ADMIN_NAME}: {ADMIN_PHONE}",
             )
-
             return True
 
-        send_text(
-            user_id,
-            order_summary(
-                fresh_session,
-                product,
-            ),
-        )
-
+        send_text(user_id, order_summary(fresh_session, product))
         return True
 
     if stage == "waiting_confirm":
         if normalized_text not in CONFIRM_WORDS:
             send_text(
                 user_id,
-                (
-                    'Confirm করতে “Confirm” '
-                    'বা “কনফার্ম” লিখুন।'
-                ),
+                'Confirm করতে “Confirm” বা “কনফার্ম” লিখুন।',
             )
-
             return True
 
         fresh_session = get_session(user_id)
-
-        product = product_by_name(
-            fresh_session.get(
-                "Product Name",
-                "",
-            ),
-            catalog,
-        )
+        product = find_product(fresh_session.get("product_name", ""))
 
         if not product:
             send_text(
                 user_id,
-                (
-                    "প্রোডাক্টের তথ্য পাওয়া যায়নি। "
-                    f"Admin {ADMIN_NAME}: {ADMIN_PHONE}"
-                ),
+                f"প্রোডাক্টের তথ্য পাওয়া যায়নি। Admin {ADMIN_NAME}: {ADMIN_PHONE}",
             )
-
             return True
 
-        order_id = save_order(
-            user_id,
-            fresh_session,
-            product,
-        )
-
+        order_id = save_order(user_id, fresh_session, product)
         clear_session(user_id)
 
         send_text(
             user_id,
             (
-                "✅ অর্ডার গ্রহণ করা হয়েছে।\n"
+                "✅ আপনার অর্ডারটি গ্রহণ করা হয়েছে।\n"
                 f"Order ID: {order_id}\n"
-                "অ্যাডমিন যাচাই করে "
-                "চূড়ান্ত কনফার্ম করবেন।"
+                "অ্যাডমিন যাচাই করে চূড়ান্ত কনফার্ম করবেন। "
+                "সাধারণত ২–৪ দিনের মধ্যে ডেলিভারি হয়।"
             ),
         )
 
@@ -1447,193 +1124,100 @@ def handle(
     text: str = "",
     image_url: Optional[str] = None,
 ) -> None:
-    catalog = safe_products()
-
     search_text = str(text or "").strip()
 
     if image_url:
         if openai_configured():
             try:
-                image_description = describe_image(
-                    image_url
-                )
-
-                search_text = (
-                    f"{search_text}\n"
-                    f"ছবির বর্ণনা: "
-                    f"{image_description}"
-                ).strip()
-
+                description = describe_image(image_url)
+                search_text = f"{search_text}\nছবির বর্ণনা: {description}".strip()
             except Exception:
-                logger.exception(
-                    "Vision processing failed."
-                )
-
+                logger.exception("Vision processing failed.")
         elif not search_text:
             send_text(
                 user_id,
-                (
-                    "ছবিটি পেয়েছি। "
-                    "প্রোডাক্টের নামও লিখে পাঠান।"
-                ),
+                "ছবিটি পেয়েছি। প্রোডাক্টের নামও লিখে পাঠান।",
             )
-
             return
 
-    selected_product = find_product(
-        search_text,
-        catalog,
-    )
+    selected_product = find_product(search_text)
 
-    if order_flow(
-        user_id,
-        text or search_text,
-        catalog,
-        selected_product,
-    ):
+    if order_flow(user_id, text or search_text, selected_product):
         return
 
     if selected_product:
-        image = selected_product.get(
-            "Image URL"
-        )
+        image_url_value = selected_product.get("image_url", "")
 
-        if image:
+        if image_url_value:
             try:
-                send_image(
-                    user_id,
-                    image,
-                )
-
+                send_image(user_id, image_url_value)
             except Exception:
-                logger.exception(
-                    "Product image send failed."
-                )
+                logger.exception("Product image send failed.")
 
-        send_text(
+        send_text(user_id, product_text(selected_product))
+        save_session(
             user_id,
-            product_text(selected_product),
+            {"product_name": selected_product.get("name", "")},
         )
+        return
 
-        if google_configured():
-            try:
-                save_session(
-                    user_id,
-                    {
-                        "Product Name": (
-                            selected_product.get(
-                                "Product Name",
-                                "",
-                            )
-                        )
-                    },
-                )
-
-            except Exception:
-                logger.exception(
-                    "Could not save selected product."
-                )
-
+    faq_answer = find_faq(search_text)
+    if faq_answer:
+        send_text(user_id, faq_answer)
         return
 
     if not search_text:
         send_text(
             user_id,
-            (
-                "আপনার মেসেজটি বুঝতে পারিনি। "
-                "প্রোডাক্টের নাম বা ছবি পাঠান।"
-            ),
+            "আপনার মেসেজটি বুঝতে পারিনি। প্রোডাক্টের নাম বা ছবি পাঠান।",
         )
-
         return
 
-    reply = ai_reply(
-        search_text,
-        catalog,
-    )
-
-    send_text(
-        user_id,
-        reply,
-    )
+    send_text(user_id, ai_reply(search_text))
 
 
 # =========================================================
 # BACKGROUND EVENT PROCESSOR
 # =========================================================
 
-def process_messaging_event(
-    event: Dict[str, Any],
-) -> None:
-    sender = (
-        event.get("sender") or {}
-    ).get("id")
-
+def process_messaging_event(event: Dict[str, Any]) -> None:
+    sender = (event.get("sender") or {}).get("id")
     message = event.get("message")
 
-    # Delivery, read, reaction, postback বা অন্যান্য event বাদ
-    if (
-        not sender
-        or not isinstance(message, dict)
-    ):
+    if not sender or not isinstance(message, dict):
         return
 
-    # Bot-এর নিজের পাঠানো echo message বাদ
     if message.get("is_echo"):
         return
 
-    message_id = str(
-        message.get("mid") or ""
-    ).strip()
+    message_id = str(message.get("mid") or "").strip()
 
-    # একই message দ্বিতীয়বার process হবে না
-    if (
-        message_id
-        and is_duplicate_message(message_id)
-    ):
-        logger.info(
-            "Duplicate message ignored: %s",
-            message_id,
-        )
+    if message_id and is_duplicate_message(message_id):
+        logger.info("Duplicate message ignored: %s", message_id)
         return
 
-    text = str(
-        message.get("text") or ""
-    ).strip()
-
+    text = str(message.get("text") or "").strip()
     image_url = image_from_event(event)
 
-    # Text বা image কোনোটিই না থাকলে বাদ
     if not text and not image_url:
         return
 
     try:
-        handle(
-            str(sender),
-            text,
-            image_url,
-        )
+        handle(str(sender), text, image_url)
 
     except Exception:
-        logger.exception(
-            "Message handler failed."
-        )
+        logger.exception("Message handler failed.")
 
-        # একই event-এর জন্য শুধু একবার fallback পাঠানো হবে
         try:
             send_text(
                 str(sender),
                 (
-                    "দুঃখিত, এই মুহূর্তে তথ্য "
-                    "প্রসেস করা যাচ্ছে না। "
+                    "দুঃখিত, এই মুহূর্তে তথ্য প্রসেস করা যাচ্ছে না। "
                     f"Admin {ADMIN_NAME}: {ADMIN_PHONE}"
                 ),
             )
-
         except Exception:
-            logger.exception(
-                "Fallback message also failed."
-            )
+            logger.exception("Fallback message also failed.")
 
 
 # =========================================================
@@ -1645,15 +1229,12 @@ def home():
     return {
         "status": "ok",
         "bot": BOT_NAME,
-        "messenger_configured": (
-            messenger_configured()
-        ),
-        "google_sheets_configured": (
-            google_configured()
-        ),
-        "openai_configured": (
-            openai_configured()
-        ),
+        "messenger_configured": messenger_configured(),
+        "openai_configured": openai_configured(),
+        "google_sheets_required": False,
+        "products_count": len(PRODUCTS),
+        "faq_count": len(FAQS),
+        "temporary_orders_count": len(ORDERS),
     }, 200
 
 
@@ -1668,74 +1249,49 @@ def health():
 @app.get("/webhook")
 def webhook_verify():
     mode = request.args.get("hub.mode")
-    token = request.args.get(
-        "hub.verify_token"
-    )
-    challenge = request.args.get(
-        "hub.challenge",
-        "",
-    )
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge", "")
 
-    if (
-        mode == "subscribe"
-        and token == VERIFY_TOKEN
-        and VERIFY_TOKEN
-    ):
-        logger.info(
-            "Webhook verification successful."
-        )
-
+    if mode == "subscribe" and token == VERIFY_TOKEN and VERIFY_TOKEN:
+        logger.info("Webhook verification successful.")
         return challenge, 200
 
-    logger.warning(
-        "Webhook verification failed."
-    )
-
+    logger.warning("Webhook verification failed.")
     return "Verification failed", 403
 
 
 @app.post("/webhook")
 def webhook_receive():
     raw_body = request.get_data()
+    signature = request.headers.get("X-Hub-Signature-256")
 
-    signature = request.headers.get(
-        "X-Hub-Signature-256"
-    )
-
-    if not verify_signature(
-        raw_body,
-        signature,
-    ):
-        logger.warning(
-            "Invalid webhook signature."
-        )
-
+    if not verify_signature(raw_body, signature):
+        logger.warning("Invalid webhook signature.")
         return "Invalid signature", 403
 
-    payload = (
-        request.get_json(silent=True)
-        or {}
-    )
+    payload = request.get_json(silent=True) or {}
 
     if payload.get("object") != "page":
         return "Ignored", 200
 
-    # Meta-কে দ্রুত response দেওয়া হবে।
-    # AI/Google Sheet processing background thread-এ চলবে।
     for entry in payload.get("entry", []):
-        messaging_events = (
-            entry.get("messaging", [])
-            or []
-        )
-
-        for event in messaging_events:
+        for event in entry.get("messaging", []) or []:
             if isinstance(event, dict):
-                EXECUTOR.submit(
-                    process_messaging_event,
-                    event,
-                )
+                EXECUTOR.submit(process_messaging_event, event)
 
     return "EVENT_RECEIVED", 200
+
+
+@app.get("/orders")
+def view_orders():
+    """
+    Temporary admin/debug endpoint.
+    Orders are stored only in memory and disappear after Render restart.
+    """
+    return {
+        "count": len(ORDERS),
+        "orders": ORDERS[-100:],
+    }, 200
 
 
 # =========================================================
@@ -1743,11 +1299,5 @@ def webhook_receive():
 # =========================================================
 
 if __name__ == "__main__":
-    port = int(
-        os.getenv("PORT", "5000")
-    )
-
-    app.run(
-        host="0.0.0.0",
-        port=port,
-    )
+    port = int(os.getenv("PORT", "5000"))
+    app.run(host="0.0.0.0", port=port)
