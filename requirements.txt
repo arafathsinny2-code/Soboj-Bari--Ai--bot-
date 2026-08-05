@@ -6,3 +6,4 @@ requests==2.32.4
 gspread
 google-auth
 pillow
+google-genai
