@@ -29,7 +29,7 @@ BOT_NAME = os.getenv("BOT_NAME", "সবুজ বাড়ি AI").strip()
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN", "").strip()
 PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN", "").strip()
 META_APP_SECRET = os.getenv("META_APP_SECRET", "").strip()
-GRAPH_API_VERSION = os.getenv("GRAPH_API_VERSION", "v26.0").strip()
+GRAPH_API_VERSION = os.getenv("GRAPH_API_VERSION", "v21.0").strip()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite").strip()
 ADMIN_NAME = os.getenv("ADMIN_NAME", "Arafat Rahman").strip()
@@ -95,7 +95,7 @@ Warranty উল্লেখ না থাকলে বলবেন: “ওয়
 
 PRODUCTS: List[Dict[str, Any]] = [
     {
-        "keywords": ["premium digital camera", "digital camera", "camera", "ক্যামেরা"],
+        "keywords": ["premium digital camera", "digital camera", "camera", "ক্যামেরা", "ক্যামেরা"],
         "name": "Premium Digital Camera",
         "price": 2150,
         "details": "32GB Memory Cardসহ Cute Premium Digital Camera। পরিষ্কার ছবি তোলে এবং Gift হিসেবে উপযোগী।",
@@ -107,7 +107,7 @@ PRODUCTS: List[Dict[str, Any]] = [
         "stock": "Available",
     },
     {
-        "keywords": ["instant print camera", "print camera", "প্রিন্ট ক্যামেরা"],
+        "keywords": ["instant print camera", "print camera", "প্রিন্ট ক্যামেরা", "ইনস্ট্যান্ট প্রিন্ট"],
         "name": "Instant Print Camera",
         "price": 3200,
         "details": "ছবি তুলে সঙ্গে সঙ্গে Print করা যায়।",
@@ -119,7 +119,7 @@ PRODUCTS: List[Dict[str, Any]] = [
         "stock": "Available",
     },
     {
-        "keywords": ["4k flip camera", "4k camera", "flip camera", "ফ্লিপ ক্যামেরা"],
+        "keywords": ["4k flip camera", "4k camera", "flip camera", "ফ্লিপ ক্যামেরা", "4k"],
         "name": "4K Flip Digital Camera",
         "price": 2690,
         "details": "4K Recording ও Flip Screenসহ Premium Digital Camera।",
@@ -131,7 +131,7 @@ PRODUCTS: List[Dict[str, Any]] = [
         "stock": "Available",
     },
     {
-        "keywords": ["galaxy projector", "projector lamp", "galaxy lamp", "প্রজেক্টর"],
+        "keywords": ["galaxy projector", "projector lamp", "galaxy lamp", "প্রজেক্টর", "গ্যালাক্সি"],
         "name": "Galaxy Projector Lamp",
         "price": 3600,
         "details": "রুমে Galaxy ও Star Projection তৈরি করে।",
@@ -143,7 +143,7 @@ PRODUCTS: List[Dict[str, Any]] = [
         "stock": "Available",
     },
     {
-        "keywords": ["mini juicer", "juicer", "blender", "জুসার"],
+        "keywords": ["mini juicer", "juicer", "blender", "জুসার", "মিনি জুসার"],
         "name": "High Quality Brushless Motor Mini Juicer",
         "price": 890,
         "details": "Portable Fruit ও Vegetable Blender।",
@@ -155,7 +155,7 @@ PRODUCTS: List[Dict[str, Any]] = [
         "stock": "Available",
     },
     {
-        "keywords": ["clip-on earbuds", "open ear earbuds", "wireless earbuds", "earbuds", "হেডফোন", "ইয়ারবাড"],
+        "keywords": ["clip-on earbuds", "open ear earbuds", "wireless earbuds", "earbuds", "হেডফোন", "ইয়ারবাড", "ইয়ারপড"],
         "name": "Clip-On Open Ear Wireless Earbuds",
         "price": 1250,
         "regular_price": 1600,
@@ -170,18 +170,18 @@ PRODUCTS: List[Dict[str, Any]] = [
 ]
 
 FAQS = [
-    {"keywords": ["delivery time", "ডেলিভারি সময়", "কত দিনে", "জেলা", "থানা"], "answer": "📍 আপনার জেলা ও থানার নাম জানালে এলাকাভিত্তিক সঠিক সময় বলা যাবে। সাধারণত ২–৪ দিনের মধ্যে Delivery হয়।"},
-    {"keywords": ["delivery charge", "ডেলিভারি চার্জ", "free delivery"], "answer": "🚚 সাধারণ Delivery Charge ৳১০০। Instant Print Camera ও Mini Juicer-এর Delivery Free।"},
-    {"keywords": ["payment", "cod", "বিকাশ", "নগদ", "পেমেন্ট"], "answer": f"💳 Cash on Delivery আছে। বিকাশ/নগদ: {ADMIN_PHONE}। Advance Payment বাধ্যতামূলক নয়।"},
-    {"keywords": ["location", "লোকেশন", "ভৈরব", "কিশোরগঞ্জ"], "answer": f"📍 আমাদের লোকেশন: ভৈরব, কিশোরগঞ্জ। আসার আগে Call/WhatsApp করুন: {ADMIN_PHONE}"},
-    {"keywords": ["wholesale", "হোলসেল", "bulk", "reselling"], "answer": f"📦 Wholesale বা Bulk Order-এর জন্য Admin {ADMIN_NAME}-এর সঙ্গে যোগাযোগ করুন: {ADMIN_PHONE}"},
-    {"keywords": ["return", "রিটার্ন", "return policy"], "answer": "🔄 Delivery-এর ২৪ ঘণ্টার মধ্যে যোগাযোগ করলে Return করা যাবে। Return Charge ৳১২০ এবং Product Original অবস্থায় থাকতে হবে।"},
-    {"keywords": ["tracking", "parcel", "পার্সেল", "ট্র্যাকিং"], "answer": f"📦 পার্সেলের আপডেট জানতে Mobile Number পাঠান। Admin {ADMIN_NAME} Update জানাবেন।"},
+    {"keywords": ["delivery time", "ডেলিভারি সময়", "কত দিনে", "জেলা", "থানা", "কতদিন"], "answer": "📍 আপনার জেলা ও থানার নাম জানালে এলাকাভিত্তিক সঠিক সময় বলা যাবে। সাধারণত ২–৪ দিনের মধ্যে Delivery হয়।"},
+    {"keywords": ["delivery charge", "ডেলিভারি চার্জ", "free delivery", "ডেলিভারি ফ্রি"], "answer": "🚚 সাধারণ Delivery Charge ৳১০০। Instant Print Camera ও Mini Juicer-এর Delivery Free।"},
+    {"keywords": ["payment", "cod", "বিকাশ", "নগদ", "পেমেন্ট", "ক্যাশ অন ডেলিভারি"], "answer": f"💳 Cash on Delivery আছে। বিকাশ/নগদ: {ADMIN_PHONE}। Advance Payment বাধ্যতামূলক নয়।"},
+    {"keywords": ["location", "লোকেশন", "ভৈরব", "কিশোরগঞ্জ", "কোথায়"], "answer": f"📍 আমাদের লোকেশন: ভৈরব, কিশোরগঞ্জ। আসার আগে Call/WhatsApp করুন: {ADMIN_PHONE}"},
+    {"keywords": ["wholesale", "হোলসেল", "bulk", "reselling", "রিসেলিং"], "answer": f"📦 Wholesale বা Bulk Order-এর জন্য Admin {ADMIN_NAME}-এর সঙ্গে যোগাযোগ করুন: {ADMIN_PHONE}"},
+    {"keywords": ["return", "রিটার্ন", "return policy", "ফেরত"], "answer": "🔄 Delivery-এর ২৪ ঘণ্টার মধ্যে যোগাযোগ করলে Return করা যাবে। Return Charge ৳১২০ এবং Product Original অবস্থায় থাকতে হবে।"},
+    {"keywords": ["tracking", "parcel", "পার্সেল", "ট্র্যাকিং", "অর্ডার স্ট্যাটাস"], "answer": f"📦 পার্সেলের আপডেট জানতে Mobile Number পাঠান। Admin {ADMIN_NAME} Update জানাবেন।"},
 ]
 
-CONFIRM_WORDS = {"confirm", "confirmed", "কনফার্ম", "হ্যাঁ", "ঠিক আছে", "yes"}
-CANCEL_WORDS = {"cancel", "বাতিল", "অর্ডার বাতিল", "নিবো না", "নেব না", "নিতে চাই না", "stop"}
-ORDER_WORDS = {"অর্ডার", "order", "নিতে চাই", "কিনতে চাই", "অর্ডার করতে চাই"}
+CONFIRM_WORDS = {"confirm", "confirmed", "কনফার্ম", "হ্যাঁ", "ঠিক আছে", "yes", "ok", "ঠিক"}
+CANCEL_WORDS = {"cancel", "বাতিল", "অর্ডার বাতিল", "নিবো না", "নেব না", "নিতে চাই না", "stop", "বন্ধ"}
+ORDER_WORDS = {"অর্ডার", "order", "নিতে চাই", "কিনতে চাই", "অর্ডার করতে চাই", "কিনব", "নিতে চাচ্ছি"}
 
 SESSIONS: Dict[str, Dict[str, Any]] = {}
 ORDERS: List[Dict[str, Any]] = []
@@ -217,7 +217,7 @@ def valid_mobile(text: str) -> bool:
 
 def is_question(text: str) -> bool:
     normalized = norm(text)
-    words = ["কি", "কী", "কত", "কোন", "কেন", "কেমন", "আছে", "হবে", "দাম", "price", "what", "which", "how", "?"]
+    words = ["কি", "কী", "কত", "কোন", "কেন", "কেমন", "আছে", "হবে", "দাম", "price", "what", "which", "how", "?", "কত টাকা"]
     return "?" in text or any(word in normalized for word in words)
 
 
@@ -236,42 +236,57 @@ def is_duplicate_message(message_id: str) -> bool:
 
 def find_product(query: str) -> Optional[Dict[str, Any]]:
     q = norm(query)
-    if not q:
+    if not q or len(q) < 2:
         return None
+
     best_product = None
     best_score = 0.0
+
     for product in PRODUCTS:
         name = norm(product["name"])
-        keywords = [norm(item) for item in product["keywords"]]
-        searchable = norm(" ".join([product["name"], " ".join(product["keywords"]), product["details"], " ".join(product["features"])]))
+        keywords = [norm(k) for k in product["keywords"]]
+        searchable = " ".join([name] + keywords + [norm(product["details"])] + [norm(f) for f in product["features"]])
+
         score = 0.0
-        if name in q:
+
+        if name == q or name in q or q in name:
             score = 1.0
-        elif q in searchable:
-            score = 0.94
+        elif any(k == q or k in q or q in k for k in keywords):
+            score = 0.92
         else:
-            for keyword in keywords + [name]:
-                if keyword in q or q in keyword:
-                    score = max(score, 0.90)
-                score = max(score, SequenceMatcher(None, q, keyword).ratio())
+            for item in [name] + keywords:
+                ratio = SequenceMatcher(None, q, item).ratio()
+                score = max(score, ratio)
+            if q in searchable:
+                score = max(score, 0.75)
+
         if score > best_score:
-            best_product = product
             best_score = score
-    return best_product if best_score >= 0.48 else None
+            best_product = product
+
+    return best_product if best_score >= 0.62 else None
 
 
 def find_faq(query: str) -> Optional[str]:
     q = norm(query)
+    if not q:
+        return None
+
     best_answer = None
     best_score = 0.0
+
     for item in FAQS:
         for keyword in item["keywords"]:
             k = norm(keyword)
-            score = 0.95 if k in q else SequenceMatcher(None, q, k).ratio()
+            if k in q or q in k:
+                score = 0.95
+            else:
+                score = SequenceMatcher(None, q, k).ratio()
             if score > best_score:
                 best_score = score
                 best_answer = item["answer"]
-    return best_answer if best_score >= 0.58 else None
+
+    return best_answer if best_score >= 0.65 else None
 
 
 def product_text(product: Dict[str, Any]) -> str:
@@ -301,17 +316,51 @@ def gemini_client() -> genai.Client:
 def gemini_reply(user_message: str) -> str:
     if not GEMINI_API_KEY:
         return f"প্রশ্নটি আরেকটু পরিষ্কার করে লিখুন। Admin: {ADMIN_PHONE}"
-    catalog = [{"name": p["name"], "price": p["price"], "regular_price": p.get("regular_price"), "details": p["details"], "features": p["features"], "colors": p["colors"], "warranty": p["warranty"], "delivery_charge": p["delivery_charge"], "delivery_time": p["delivery_time"], "stock": p["stock"]} for p in PRODUCTS]
-    response = gemini_client().models.generate_content(
-        model=GEMINI_MODEL,
-        contents=user_message,
-        config=types.GenerateContentConfig(
-            system_instruction=BUSINESS_INFO + "\nStructured Product Catalog:\n" + json.dumps(catalog, ensure_ascii=False) + "\nFAQ:\n" + json.dumps(FAQS, ensure_ascii=False),
-            temperature=0.2,
-            max_output_tokens=350,
-        ),
-    )
-    return (response.text or "").strip() or "প্রোডাক্টের নাম বা ছবি পাঠান।"
+
+    catalog = []
+    for p in PRODUCTS:
+        catalog.append({
+            "name": p["name"],
+            "price": p["price"],
+            "regular_price": p.get("regular_price"),
+            "details": p["details"],
+            "features": p["features"],
+            "colors": p["colors"] or [],
+            "warranty": p["warranty"],
+            "delivery_charge": p["delivery_charge"],
+            "delivery_time": p["delivery_time"],
+            "stock": p["stock"],
+        })
+
+    strict_system = BUSINESS_INFO + f"""
+
+STRICT RULES (অবশ্যই মানবেন):
+- শুধুমাত্র উপরের Product Catalog ও FAQ ব্যবহার করবেন।
+- কোনো দাম, স্টক, কালার, ওয়ারেন্টি, ফিচার নিজে থেকে বানাবেন না।
+- ক্যাটালগে না থাকলে বলবেন: “এই প্রোডাক্টের বিস্তারিত জানতে Admin-এর সঙ্গে যোগাযোগ করুন: {ADMIN_PHONE}”
+- সবসময় বাংলায়, ছোট ও ভদ্র উত্তর দিন।
+- “Pre-order” শব্দ ব্যবহার করবেন না।
+- যদি প্রশ্ন স্পষ্ট না হয় তাহলে প্রোডাক্টের নাম বা ছবি চাইবেন।
+"""
+
+    try:
+        response = gemini_client().models.generate_content(
+            model=GEMINI_MODEL,
+            contents=user_message,
+            config=types.GenerateContentConfig(
+                system_instruction=strict_system + "\n\nProduct Catalog:\n" + json.dumps(catalog, ensure_ascii=False, indent=2),
+                temperature=0.1,
+                max_output_tokens=280,
+                top_p=0.8,
+            ),
+        )
+        text = (response.text or "").strip()
+        if not text:
+            return f"প্রোডাক্টের নাম বা ছবি পাঠান। বিস্তারিত জানতে: {ADMIN_PHONE}"
+        return text
+    except Exception as e:
+        logger.exception("Gemini error: %s", e)
+        return f"সাময়িক সমস্যা হয়েছে। সরাসরি Admin-কে কল/WhatsApp করুন: {ADMIN_PHONE}"
 
 
 def verify_signature(raw_body: bytes, signature_header: Optional[str]) -> bool:
@@ -440,7 +489,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
 
     if contains_any(text, CANCEL_WORDS):
         clear_session(user_id)
-        send_text(user_id, "✅ অর্ডার প্রক্রিয়া বাতিল করা হয়েছে।")
+        send_text(user_id, "✅ অর্ডার প্রক্রিয়া বাতিল করা হয়েছে। নতুন করে অর্ডার করতে চাইলে বলুন।")
         return True
 
     if stage and stage != "waiting_confirm" and is_question(text):
@@ -470,7 +519,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
 
     if stage == "waiting_product":
         if not selected_product:
-            send_text(user_id, "প্রোডাক্টটি খুঁজে পাইনি। সঠিক নাম লিখুন।")
+            send_text(user_id, "প্রোডাক্টটি খুঁজে পাইনি। সঠিক নাম লিখুন অথবা ছবি পাঠান।")
             return True
         save_session(user_id, {"product_name": selected_product["name"]})
         if selected_product["colors"]:
@@ -487,7 +536,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
         if valid_colors and not any(c in t for c in valid_colors):
             send_text(user_id, "সঠিক Color লিখুন: " + ", ".join((product or {}).get("colors", [])))
             return True
-        save_session(user_id, {"color": text, "stage": "waiting_quantity"})
+        save_session(user_id, {"color": text.strip(), "stage": "waiting_quantity"})
         send_text(user_id, expected_prompt("waiting_quantity"))
         return True
 
@@ -504,7 +553,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
         if is_question(text) or len(text.strip()) < 2:
             send_text(user_id, expected_prompt("waiting_name"))
             return True
-        save_session(user_id, {"customer_name": text, "stage": "waiting_mobile"})
+        save_session(user_id, {"customer_name": text.strip(), "stage": "waiting_mobile"})
         send_text(user_id, expected_prompt("waiting_mobile"))
         return True
 
@@ -512,7 +561,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
         if not valid_mobile(text):
             send_text(user_id, "সঠিক ১১ Digit Mobile Number লিখুন—যেমন: 01XXXXXXXXX")
             return True
-        save_session(user_id, {"mobile": text, "stage": "waiting_area"})
+        save_session(user_id, {"mobile": re.sub(r"\D", "", text), "stage": "waiting_area"})
         send_text(user_id, expected_prompt("waiting_area"))
         return True
 
@@ -527,7 +576,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
         if is_question(text) or len(text.strip()) < 2:
             send_text(user_id, expected_prompt(stage))
             return True
-        save_session(user_id, {key: text, "stage": next_stage})
+        save_session(user_id, {key: text.strip(), "stage": next_stage})
         send_text(user_id, expected_prompt(next_stage))
         return True
 
@@ -535,7 +584,7 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
         if is_question(text) or len(text.strip()) < 5:
             send_text(user_id, expected_prompt("waiting_address"))
             return True
-        save_session(user_id, {"full_address": text, "stage": "waiting_confirm"})
+        save_session(user_id, {"full_address": text.strip(), "stage": "waiting_confirm"})
         fresh = get_session(user_id)
         product = find_product(fresh.get("product_name", ""))
         if not product:
@@ -557,29 +606,38 @@ def order_flow(user_id: str, text: str, selected_product: Optional[Dict[str, Any
             return True
         order_id = save_order(user_id, fresh, product)
         clear_session(user_id)
-        send_text(user_id, f"✅ আপনার অর্ডার গ্রহণ করা হয়েছে।\nOrder ID: {order_id}\nAdmin যাচাই করে Final Confirmation দেবেন।")
+        send_text(user_id, f"✅ আপনার অর্ডার গ্রহণ করা হয়েছে।\nOrder ID: {order_id}\nAdmin যাচাই করে Final Confirmation দেবেন।\nধন্যবাদ!")
         return True
 
     return False
 
 
 def handle_message(user_id: str, text: str) -> None:
+    text = text.strip()
+    if not text:
+        return
+
     selected_product = find_product(text)
+
     if order_flow(user_id, text, selected_product):
         return
+
     if selected_product:
         send_text(user_id, product_text(selected_product))
-        save_session(user_id, {"product_name": selected_product["name"]})
+        save_session(user_id, {"product_name": selected_product["name"], "stage": ""})
         return
+
     faq_answer = find_faq(text)
     if faq_answer:
         send_text(user_id, faq_answer)
         return
+
     try:
-        send_text(user_id, gemini_reply(text))
+        reply = gemini_reply(text)
+        send_text(user_id, reply)
     except Exception:
-        logger.exception("Gemini generation failed.")
-        send_text(user_id, f"প্রশ্নটি বুঝতে সমস্যা হচ্ছে। Admin: {ADMIN_PHONE}")
+        logger.exception("Final handler failed")
+        send_text(user_id, f"সাময়িক সমস্যা। Admin {ADMIN_NAME}: {ADMIN_PHONE}")
 
 
 def process_messaging_event(event: Dict[str, Any]) -> None:
@@ -649,7 +707,7 @@ def receive_webhook():
 
 @app.get("/orders")
 def view_orders():
-    return {"count": len(ORDERS), "orders": ORDERS[-100:], "note": "Render restart হলে memory orders মুছে যাবে।"}, 200
+    return {"count": len(ORDERS), "orders": ORDERS[-100:], "note": "Restart হলে memory orders মুছে যাবে।"}, 200
 
 
 if __name__ == "__main__":
