@@ -177,7 +177,18 @@ def save_json(path, data):
 # NORMALIZE ENGINE
 # ==========================================================
 
-BANGLA_DIGITS = str.maketrans("à§¦à§§à§¨à§©à§ªà§«à§¬à§­à§®à§¯", "0123456789")
+BANGLA_DIGITS = {
+    0x09E6: "0",
+    0x09E7: "1",
+    0x09E8: "2",
+    0x09E9: "3",
+    0x09EA: "4",
+    0x09EB: "5",
+    0x09EC: "6",
+    0x09ED: "7",
+    0x09EE: "8",
+    0x09EF: "9",
+}
 
 
 def normalize(text):
