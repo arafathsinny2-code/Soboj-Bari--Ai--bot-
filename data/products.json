@@ -1,1 +1,224 @@
-[]
+[
+  {
+    "id": "PD001",
+    "name": "Premium Digital Camera",
+    "price": "৳2150",
+    "price_value": 2150,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "100",
+    "warranty": "No Warranty",
+    "description": "32GB Memory Cardসহ Cute Premium Digital Camera।",
+    "features": [
+      "পরিষ্কার ছবি",
+      "Photo & Video",
+      "32GB Memory Card",
+      "Premium Cute Design"
+    ],
+    "colors": [],
+    "keywords": [
+      "premium digital camera",
+      "digital camera",
+      "camera",
+      "cute camera",
+      "ডিজিটাল ক্যামেরা",
+      "ক্যামেরা"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD002",
+    "name": "Clip-On Open Ear Wireless Earbuds",
+    "price": "৳1250",
+    "price_value": 1250,
+    "regular_price": "৳1600",
+    "offer_price": "৳1250",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "100",
+    "warranty": "No Warranty",
+    "description": "Premium Clip-On Open Ear Wireless Earbuds।",
+    "features": [
+      "16 Hours Battery Backup",
+      "Built-in Microphone",
+      "Clear Voice Call",
+      "Comfortable Clip Design"
+    ],
+    "colors": [
+      "White",
+      "Gold",
+      "Pink",
+      "Black",
+      "Purple"
+    ],
+    "keywords": [
+      "earbuds",
+      "earbud",
+      "headphone",
+      "bluetooth",
+      "clip on",
+      "wireless earbuds",
+      "ইয়ারবাড",
+      "হেডফোন"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD003",
+    "name": "Luxury Bag Earbuds",
+    "price": "৳1550",
+    "price_value": 1550,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "100",
+    "warranty": "No Warranty",
+    "description": "Luxury Bag Style Wireless Earbuds।",
+    "features": [
+      "Premium Design",
+      "Wireless",
+      "Touch Control"
+    ],
+    "colors": [
+      "White",
+      "Black",
+      "Deep Pink",
+      "Baby Pink"
+    ],
+    "keywords": [
+      "luxury earbuds",
+      "bag earbuds",
+      "clip earbuds",
+      "ব্যাগ ইয়ারবাড"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD004",
+    "name": "Instant Print Camera",
+    "price": "৳3200",
+    "price_value": 3200,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "0",
+    "warranty": "No Warranty",
+    "description": "Instant Print Kids Camera।",
+    "features": [
+      "Instant Printing",
+      "32GB Memory Card",
+      "Built-in Games",
+      "4 Paper Roll Included"
+    ],
+    "colors": [
+      "White",
+      "Pink",
+      "Blue",
+      "Purple"
+    ],
+    "keywords": [
+      "print camera",
+      "instant print",
+      "kids camera",
+      "প্রিন্ট ক্যামেরা"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD005",
+    "name": "4K Flip Camera",
+    "price": "৳2690",
+    "price_value": 2690,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "100",
+    "warranty": "No Warranty",
+    "description": "Premium 4K Flip Camera।",
+    "features": [
+      "4K Video",
+      "Flip Screen",
+      "32GB Memory Card",
+      "Built-in Games",
+      "Music Player"
+    ],
+    "colors": [
+      "White",
+      "Black",
+      "Pink",
+      "Purple"
+    ],
+    "keywords": [
+      "4k camera",
+      "flip camera",
+      "4k flip",
+      "ফ্লিপ ক্যামেরা"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD006",
+    "name": "Galaxy Projector",
+    "price": "৳3600",
+    "price_value": 3600,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "100",
+    "warranty": "No Warranty",
+    "description": "Galaxy Star Projector with Bluetooth Speaker।",
+    "features": [
+      "Bluetooth Speaker",
+      "360° Rotation",
+      "13 Light Modes",
+      "White Noise"
+    ],
+    "colors": [],
+    "keywords": [
+      "projector",
+      "galaxy projector",
+      "star projector",
+      "গ্যালাক্সি প্রজেক্টর"
+    ],
+    "images": [],
+    "active": true
+  },
+  {
+    "id": "PD007",
+    "name": "Mini Juicer",
+    "price": "৳890",
+    "price_value": 890,
+    "regular_price": "",
+    "offer_price": "",
+    "stock": "Available",
+    "delivery": "২–৪ দিন",
+    "delivery_charge": "0",
+    "warranty": "No Warranty",
+    "description": "Portable Mini Juicer।",
+    "features": [
+      "Brushless Motor",
+      "Portable",
+      "USB Rechargeable"
+    ],
+    "colors": [],
+    "keywords": [
+      "juicer",
+      "mini juicer",
+      "portable blender",
+      "জুসার"
+    ],
+    "images": [],
+    "active": true
+  }
+]
