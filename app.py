@@ -1,3 +1,4 @@
+# -*- coding: ascii -*-
 # ==========================================================
 # SOBUJ BARI MESSENGER BOT
 # CLEAN FIXED VERSION
@@ -44,8 +45,8 @@ GRAPH_API = "https://graph.facebook.com/v23.0/me/messages"
 # BOT CONFIG
 # ==========================================================
 
-BOT_NAME = "à¦¸à¦¬à§à¦ à¦¬à¦¾à¦¡à¦¼à¦¿ Assistant"
-PAGE_NAME = "à¦¸à¦¬à§à¦ à¦¬à¦¾à¦¡à¦¼à¦¿"
+BOT_NAME = "\u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf Assistant"
+PAGE_NAME = "\u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf"
 DEFAULT_LANGUAGE = "bn"
 VERSION = "1.0.1"
 
@@ -122,19 +123,19 @@ MAX_TYPING_DELAY = 1.8
 # ==========================================================
 
 DEFAULT_REPLY = (
-    "à¦¦à§à¦à¦à¦¿à¦¤, à¦à¦®à¦¿ à¦¬à¦¿à¦·à¦¯à¦¼à¦à¦¿ à¦¬à§à¦à¦¤à§ à¦ªà¦¾à¦°à¦¿à¦¨à¦¿à¥¤ "
-    "à¦à¦¨à§à¦à§à¦°à¦¹ à¦à¦°à§ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° à¦¨à¦¾à¦® à¦¬à¦¾ à¦ªà§à¦°à¦¶à§à¦¨à¦à¦¿ à¦à¦¬à¦¾à¦° à¦²à¦¿à¦à§à¦¨à¥¤"
+    "\u09a6\u09c1\u0983\u0996\u09bf\u09a4, \u0986\u09ae\u09bf \u09ac\u09bf\u09b7\u09af\u09bc\u099f\u09bf \u09ac\u09c1\u099d\u09a4\u09c7 \u09aa\u09be\u09b0\u09bf\u09a8\u09bf\u0964 "
+    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09ac\u09be \u09aa\u09cd\u09b0\u09b6\u09cd\u09a8\u099f\u09bf \u0986\u09ac\u09be\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 )
 
 ORDER_SUCCESS_REPLY = (
-    "â à¦à¦ªà¦¨à¦¾à¦° à¦à¦°à§à¦¡à¦¾à¦° à¦¸à¦«à¦²à¦­à¦¾à¦¬à§ à¦à§à¦°à¦¹à¦£ à¦à¦°à¦¾ à¦¹à¦¯à¦¼à§à¦à§à¥¤ "
-    "à¦à¦®à¦¾à¦¦à§à¦° à¦ªà§à¦°à¦¤à¦¿à¦¨à¦¿à¦§à¦¿ à¦¦à§à¦°à§à¦¤ à¦¯à§à¦à¦¾à¦¯à§à¦ à¦à¦°à¦¬à§à¦¨à¥¤"
+    "\u2705 \u0986\u09aa\u09a8\u09be\u09b0 \u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u09b8\u09ab\u09b2\u09ad\u09be\u09ac\u09c7 \u0997\u09cd\u09b0\u09b9\u09a3 \u0995\u09b0\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964 "
+    "\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09a4\u09bf\u09a8\u09bf\u09a7\u09bf \u09a6\u09cd\u09b0\u09c1\u09a4 \u09af\u09cb\u0997\u09be\u09af\u09cb\u0997 \u0995\u09b0\u09ac\u09c7\u09a8\u0964"
 )
 
 HUMAN_REPLY = (
-    "ð¨âð¼ à¦à¦ªà¦¨à¦¾à¦° à¦à¦¨à§à¦°à§à¦§à¦à¦¿ à¦à¦®à¦¾à¦¦à§à¦° à¦à¦¿à¦®à§à¦° à¦à¦¾à¦à§ à¦ªà¦¾à¦ à¦¾à¦¨à§ à¦¹à¦¯à¦¼à§à¦à§à¥¤\n\n"
-    "à¦à¦¨à§à¦à§à¦°à¦¹ à¦à¦°à§ à¦à¦à¦à§ à¦à¦ªà§à¦à§à¦·à¦¾ à¦à¦°à§à¦¨à¥¤\n\n"
-    "à¦à¦®à¦¾à¦¦à§à¦° à¦ªà§à¦°à¦¤à¦¿à¦¨à¦¿à¦§à¦¿ à¦à§à¦¬ à¦¦à§à¦°à§à¦¤ à¦à¦ªà¦¨à¦¾à¦° à¦¸à¦¾à¦¥à§ à¦¯à§à¦à¦¾à¦¯à§à¦ à¦à¦°à¦¬à§à¦¨à¥¤ ð"
+    "\U0001f468\u200d\U0001f4bc \u0986\u09aa\u09a8\u09be\u09b0 \u0985\u09a8\u09c1\u09b0\u09cb\u09a7\u099f\u09bf \u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u099f\u09bf\u09ae\u09c7\u09b0 \u0995\u09be\u099b\u09c7 \u09aa\u09be\u09a0\u09be\u09a8\u09cb \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964\n\n"
+    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u098f\u0995\u099f\u09c1 \u0985\u09aa\u09c7\u0995\u09cd\u09b7\u09be \u0995\u09b0\u09c1\u09a8\u0964\n\n"
+    "\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09a4\u09bf\u09a8\u09bf\u09a7\u09bf \u0996\u09c1\u09ac \u09a6\u09cd\u09b0\u09c1\u09a4 \u0986\u09aa\u09a8\u09be\u09b0 \u09b8\u09be\u09a5\u09c7 \u09af\u09cb\u0997\u09be\u09af\u09cb\u0997 \u0995\u09b0\u09ac\u09c7\u09a8\u0964 \U0001f60a"
 )
 
 
@@ -435,46 +436,46 @@ def suggest_products(message):
 
 PRICE_KEYWORDS = [
     "price",
-    "à¦¦à¦¾à¦®",
-    "à¦®à§à¦²à§à¦¯",
+    "\u09a6\u09be\u09ae",
+    "\u09ae\u09c2\u09b2\u09cd\u09af",
     "offer",
-    "à¦à¦¤",
+    "\u0995\u09a4",
     "tk",
-    "à§³"
+    "\u09f3"
 ]
 
 COLOR_KEYWORDS = [
     "color",
     "colour",
-    "à¦°à¦",
-    "à¦à¦¾à¦²à¦¾à¦°"
+    "\u09b0\u0982",
+    "\u0995\u09be\u09b2\u09be\u09b0"
 ]
 
 STOCK_KEYWORDS = [
     "stock",
-    "à¦¸à§à¦à¦",
+    "\u09b8\u09cd\u099f\u0995",
     "available",
-    "à¦à¦à§"
+    "\u0986\u099b\u09c7"
 ]
 
 DELIVERY_KEYWORDS = [
     "delivery",
-    "à¦¡à§à¦²à¦¿à¦­à¦¾à¦°à¦¿",
-    "à¦à¦¤ à¦¦à¦¿à¦¨à§",
+    "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",
+    "\u0995\u09a4 \u09a6\u09bf\u09a8\u09c7",
     "courier"
 ]
 
 WARRANTY_KEYWORDS = [
     "warranty",
-    "à¦à§à¦¯à¦¾à¦°à¦¾à¦¨à§à¦à¦¿",
-    "à¦à¦¯à¦¼à¦¾à¦°à§à¦¨à§à¦à¦¿"
+    "\u0997\u09cd\u09af\u09be\u09b0\u09be\u09a8\u09cd\u099f\u09bf",
+    "\u0993\u09af\u09bc\u09be\u09b0\u09c7\u09a8\u09cd\u099f\u09bf"
 ]
 
 FEATURE_KEYWORDS = [
     "feature",
     "features",
-    "à¦¸à§à¦ªà§à¦¸à¦¿à¦«à¦¿à¦à§à¦¶à¦¨",
-    "à¦à¦¿ à¦à¦¿ à¦à¦à§"
+    "\u09b8\u09cd\u09aa\u09c7\u09b8\u09bf\u09ab\u09bf\u0995\u09c7\u09b6\u09a8",
+    "\u0995\u09bf \u0995\u09bf \u0986\u099b\u09c7"
 ]
 
 
@@ -482,20 +483,20 @@ def format_product_reply(product):
     features = product.get("features", [])
     colors = product.get("colors", [])
 
-    feature_text = "\n".join(f"â¢ {item}" for item in features)
+    feature_text = "\n".join(f"\u2022 {item}" for item in features)
     color_text = ", ".join(colors) if colors else "Not Available"
 
     return (
-        f"ðï¸ {product.get('name', '')}\n\n"
-        f"ð° à¦®à§à¦²à§à¦¯: {product.get('price', '')}\n\n"
-        f"ð¦ Stock: {product.get('stock', 'Available')}\n\n"
-        f"ð {product.get('description', '')}\n\n"
-        f"ð¨ Color:\n{color_text}\n\n"
-        f"â¨ à¦ªà§à¦°à¦§à¦¾à¦¨ Features:\n\n{feature_text}\n\n"
-        f"ð¡ï¸ Warranty:\n{product.get('warranty', 'No Warranty')}\n\n"
-        f"ð Delivery:\n{product.get('delivery', 'à§¨âà§ª à¦¦à¦¿à¦¨')}\n\n"
-        f"ð³ Delivery Charge:\nà§³{product.get('delivery_charge', '100')}\n\n"
-        'à¦à¦°à§à¦¡à¦¾à¦° à¦à¦°à¦¤à§ "à¦à¦°à§à¦¡à¦¾à¦° à¦à¦°à¦¤à§ à¦à¦¾à¦" à¦²à¦¿à¦à§à¦¨à¥¤'
+        f"\U0001f6cd\ufe0f {product.get('name', '')}\n\n"
+        f"\U0001f4b0 \u09ae\u09c2\u09b2\u09cd\u09af: {product.get('price', '')}\n\n"
+        f"\U0001f4e6 Stock: {product.get('stock', 'Available')}\n\n"
+        f"\U0001f4dd {product.get('description', '')}\n\n"
+        f"\U0001f3a8 Color:\n{color_text}\n\n"
+        f"\u2728 \u09aa\u09cd\u09b0\u09a7\u09be\u09a8 Features:\n\n{feature_text}\n\n"
+        f"\U0001f6e1\ufe0f Warranty:\n{product.get('warranty', 'No Warranty')}\n\n"
+        f"\U0001f69a Delivery:\n{product.get('delivery', '\u09e8\u2013\u09ea \u09a6\u09bf\u09a8')}\n\n"
+        f"\U0001f4b3 Delivery Charge:\n\u09f3{product.get('delivery_charge', '100')}\n\n"
+        '\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u0987" \u09b2\u09bf\u0996\u09c1\u09a8\u0964'
     )
 
 
@@ -505,8 +506,8 @@ def is_price_question(message):
 
 def price_reply(product):
     return (
-        f"ð° {product.get('name', '')}\n\n"
-        f"à¦®à§à¦²à§à¦¯à¦ {product.get('price', '')}"
+        f"\U0001f4b0 {product.get('name', '')}\n\n"
+        f"\u09ae\u09c2\u09b2\u09cd\u09af\u0983 {product.get('price', '')}"
     )
 
 
@@ -514,27 +515,27 @@ def color_reply(product):
     colors = product.get("colors", [])
 
     if not colors:
-        return "à¦à¦ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° Color à¦¤à¦¥à§à¦¯ à¦¨à§à¦à¥¤"
+        return "\u098f\u0987 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 Color \u09a4\u09a5\u09cd\u09af \u09a8\u09c7\u0987\u0964"
 
-    return "ð¨ Available Color:\n\n" + "\n".join(f"â¢ {c}" for c in colors)
+    return "\U0001f3a8 Available Color:\n\n" + "\n".join(f"\u2022 {c}" for c in colors)
 
 
 def stock_reply(product):
-    return f"ð¦ Stock : {product.get('stock', 'Available')}"
+    return f"\U0001f4e6 Stock : {product.get('stock', 'Available')}"
 
 
 def delivery_reply(product):
     return (
-        "ð Delivery Time\n\n"
-        f"{product.get('delivery', 'à§¨âà§ª à¦¦à¦¿à¦¨')}\n\n"
-        "ð³ Delivery Charge\n\n"
-        f"à§³{product.get('delivery_charge', '100')}"
+        "\U0001f69a Delivery Time\n\n"
+        f"{product.get('delivery', '\u09e8\u2013\u09ea \u09a6\u09bf\u09a8')}\n\n"
+        "\U0001f4b3 Delivery Charge\n\n"
+        f"\u09f3{product.get('delivery_charge', '100')}"
     )
 
 
 def warranty_reply(product):
     return (
-        "ð¡ï¸ Warranty\n\n"
+        "\U0001f6e1\ufe0f Warranty\n\n"
         f"{product.get('warranty', 'No Warranty')}"
     )
 
@@ -543,10 +544,10 @@ def feature_reply(product):
     features = product.get("features", [])
 
     if not features:
-        return "à¦à¦ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° Features à¦¤à¦¥à§à¦¯ à¦¨à§à¦à¥¤"
+        return "\u098f\u0987 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 Features \u09a4\u09a5\u09cd\u09af \u09a8\u09c7\u0987\u0964"
 
-    return "â¨ à¦ªà§à¦°à¦§à¦¾à¦¨ Features\n\n" + "\n".join(
-        f"â¢ {item}" for item in features
+    return "\u2728 \u09aa\u09cd\u09b0\u09a7\u09be\u09a8 Features\n\n" + "\n".join(
+        f"\u2022 {item}" for item in features
     )
 
 
@@ -628,12 +629,12 @@ def list_products(limit=None):
     items = PRODUCTS[:limit] if limit else PRODUCTS
 
     if not items:
-        return "à¦à¦ à¦®à§à¦¹à§à¦°à§à¦¤à§ à¦à§à¦¨à§ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦ à¦²à§à¦¡ à¦à¦°à¦¾ à¦¨à§à¦à¥¤"
+        return "\u098f\u0987 \u09ae\u09c1\u09b9\u09c2\u09b0\u09cd\u09a4\u09c7 \u0995\u09cb\u09a8\u09cb \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b2\u09cb\u09a1 \u0995\u09b0\u09be \u09a8\u09c7\u0987\u0964"
 
-    text = "ðï¸ à¦à¦®à¦¾à¦¦à§à¦° à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à¦¸à¦®à§à¦¹\n\n"
+    text = "\U0001f6cd\ufe0f \u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09b8\u09ae\u09c2\u09b9\n\n"
 
     for product in items:
-        text += f"â¢ {product.get('name', '')} â {product.get('price', '')}\n"
+        text += f"\u2022 {product.get('name', '')} \u2014 {product.get('price', '')}\n"
 
     return text.strip()
 
@@ -665,13 +666,13 @@ def expensive_product():
 def recommendation_reply(message):
     msg = normalize(message)
 
-    if "à¦¸à¦¬ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦" in msg or "all products" in msg:
+    if "\u09b8\u09ac \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f" in msg or "all products" in msg:
         return list_products()
 
-    if "à¦¸à¦¸à§à¦¤à¦¾" in msg or "cheap" in msg:
+    if "\u09b8\u09b8\u09cd\u09a4\u09be" in msg or "cheap" in msg:
         return cheapest_product()
 
-    if "à¦¦à¦¾à¦®à¦¿" in msg or "expensive" in msg:
+    if "\u09a6\u09be\u09ae\u09bf" in msg or "expensive" in msg:
         return expensive_product()
 
     return None
@@ -690,15 +691,15 @@ def load_default_faq():
             "title": "Delivery",
             "keywords": [
                 "delivery",
-                "à¦¡à§à¦²à¦¿à¦­à¦¾à¦°à¦¿",
-                "à¦à¦¤ à¦¦à¦¿à¦¨à§",
+                "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",
+                "\u0995\u09a4 \u09a6\u09bf\u09a8\u09c7",
                 "courier",
                 "shipping"
             ],
             "reply": (
-                "ð à¦à¦®à¦°à¦¾ Steadfast Courier-à¦à¦° à¦®à¦¾à¦§à§à¦¯à¦®à§ à¦¸à¦¾à¦°à¦¾ à¦¬à¦¾à¦à¦²à¦¾à¦¦à§à¦¶à§ "
-                "à¦¹à§à¦® à¦¡à§à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦à¦°à§ à¦¥à¦¾à¦à¦¿à¥¤ à¦¸à¦¾à¦§à¦¾à¦°à¦£à¦¤ à§¨âà§ª à¦¦à¦¿à¦¨à§à¦° à¦®à¦§à§à¦¯à§ "
-                "à¦¡à§à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¸à¦®à§à¦ªà¦¨à§à¦¨ à¦¹à¦¯à¦¼à¥¤"
+                "\U0001f69a \u0986\u09ae\u09b0\u09be Steadfast Courier-\u098f\u09b0 \u09ae\u09be\u09a7\u09cd\u09af\u09ae\u09c7 \u09b8\u09be\u09b0\u09be \u09ac\u09be\u0982\u09b2\u09be\u09a6\u09c7\u09b6\u09c7 "
+                "\u09b9\u09cb\u09ae \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf \u0995\u09b0\u09c7 \u09a5\u09be\u0995\u09bf\u0964 \u09b8\u09be\u09a7\u09be\u09b0\u09a3\u09a4 \u09e8\u2013\u09ea \u09a6\u09bf\u09a8\u09c7\u09b0 \u09ae\u09a7\u09cd\u09af\u09c7 "
+                "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf \u09b8\u09ae\u09cd\u09aa\u09a8\u09cd\u09a8 \u09b9\u09af\u09bc\u0964"
             ),
             "priority": 10,
             "active": True
@@ -708,13 +709,13 @@ def load_default_faq():
             "title": "Payment",
             "keywords": [
                 "payment",
-                "à¦ªà§à¦®à§à¦¨à§à¦",
+                "\u09aa\u09c7\u09ae\u09c7\u09a8\u09cd\u099f",
                 "cash on delivery",
                 "cod"
             ],
             "reply": (
-                "ð³ à¦à¦®à¦°à¦¾ Cash on Delivery (COD) à¦¸à§à¦¬à¦¿à¦§à¦¾ à¦¦à¦¿à¦¯à¦¼à§ à¦¥à¦¾à¦à¦¿à¥¤ "
-                "à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦ à¦¹à¦¾à¦¤à§ à¦ªà§à¦¯à¦¼à§ à¦¤à¦¾à¦°à¦ªà¦° à¦à¦¾à¦à¦¾ à¦ªà¦°à¦¿à¦¶à§à¦§ à¦à¦°à¦¤à§ à¦ªà¦¾à¦°à¦¬à§à¦¨à¥¤"
+                "\U0001f4b3 \u0986\u09ae\u09b0\u09be Cash on Delivery (COD) \u09b8\u09c1\u09ac\u09bf\u09a7\u09be \u09a6\u09bf\u09af\u09bc\u09c7 \u09a5\u09be\u0995\u09bf\u0964 "
+                "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b9\u09be\u09a4\u09c7 \u09aa\u09c7\u09af\u09bc\u09c7 \u09a4\u09be\u09b0\u09aa\u09b0 \u099f\u09be\u0995\u09be \u09aa\u09b0\u09bf\u09b6\u09cb\u09a7 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09ac\u09c7\u09a8\u0964"
             ),
             "priority": 10,
             "active": True
@@ -780,47 +781,47 @@ CONVERSATIONS = {
             "hi",
             "hello",
             "hey",
-            "à¦¹à§à¦¯à¦¾à¦²à§",
-            "à¦à¦¸à¦¸à¦¾à¦²à¦¾à¦®à§ à¦à¦²à¦¾à¦à¦à§à¦®",
+            "\u09b9\u09cd\u09af\u09be\u09b2\u09cb",
+            "\u0986\u09b8\u09b8\u09be\u09b2\u09be\u09ae\u09c1 \u0986\u09b2\u09be\u0987\u0995\u09c1\u09ae",
             "assalamu alaikum",
             "slm",
             "salam"
         ],
         "reply": (
-            "à¦à¦¸à¦¸à¦¾à¦²à¦¾à¦®à§ à¦à¦²à¦¾à¦à¦à§à¦®à¥¤ à¦¸à¦¬à§à¦ à¦¬à¦¾à¦¡à¦¼à¦¿-à¦ à¦à¦ªà¦¨à¦¾à¦à§ à¦¸à§à¦¬à¦¾à¦à¦¤à¦®à¥¤ ð\n\n"
-            "à¦à¦ªà¦¨à¦¿ à¦à§à¦¨ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à¦à¦¿ à¦à§à¦à¦à¦à§à¦¨?\n"
-            "à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨ à¦à¦¥à¦¬à¦¾ à¦à¦¬à¦¿ à¦ªà¦¾à¦ à¦¾à¦¨à¥¤"
+            "\u0986\u09b8\u09b8\u09be\u09b2\u09be\u09ae\u09c1 \u0986\u09b2\u09be\u0987\u0995\u09c1\u09ae\u0964 \u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf-\u098f \u0986\u09aa\u09a8\u09be\u0995\u09c7 \u09b8\u09cd\u09ac\u09be\u0997\u09a4\u09ae\u0964 \U0001f60a\n\n"
+            "\u0986\u09aa\u09a8\u09bf \u0995\u09cb\u09a8 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u099f\u09bf \u0996\u09c1\u0981\u099c\u099b\u09c7\u09a8?\n"
+            "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8 \u0985\u09a5\u09ac\u09be \u099b\u09ac\u09bf \u09aa\u09be\u09a0\u09be\u09a8\u0964"
         )
     },
     "thanks": {
         "keywords": [
             "thanks",
             "thank you",
-            "à¦§à¦¨à§à¦¯à¦¬à¦¾à¦¦",
+            "\u09a7\u09a8\u09cd\u09af\u09ac\u09be\u09a6",
             "tnx",
             "thx"
         ],
-        "reply": "à¦à¦ªà¦¨à¦¾à¦à§à¦ à¦§à¦¨à§à¦¯à¦¬à¦¾à¦¦à¥¤ ð\nà¦à¦° à¦à§à¦¨à§ à¦¤à¦¥à§à¦¯ à¦²à¦¾à¦à¦²à§ à¦à¦¾à¦¨à¦¾à¦¬à§à¦¨à¥¤"
+        "reply": "\u0986\u09aa\u09a8\u09be\u0995\u09c7\u0993 \u09a7\u09a8\u09cd\u09af\u09ac\u09be\u09a6\u0964 \U0001f49a\n\u0986\u09b0 \u0995\u09cb\u09a8\u09cb \u09a4\u09a5\u09cd\u09af \u09b2\u09be\u0997\u09b2\u09c7 \u099c\u09be\u09a8\u09be\u09ac\u09c7\u09a8\u0964"
     },
     "ok": {
         "keywords": [
             "ok",
             "okay",
             "okk",
-            "à¦ à¦¿à¦ à¦à¦à§",
-            "à¦à¦à§à¦à¦¾",
-            "à¦¹à§à¦®"
+            "\u09a0\u09bf\u0995 \u0986\u099b\u09c7",
+            "\u0986\u099a\u09cd\u099b\u09be",
+            "\u09b9\u09c1\u09ae"
         ],
-        "reply": "ð à¦ à¦¿à¦ à¦à¦à§à¥¤ à¦à¦° à¦à§à¦¨à§ à¦¤à¦¥à§à¦¯ à¦²à¦¾à¦à¦²à§ à¦à¦¾à¦¨à¦¾à¦¬à§à¦¨à¥¤"
+        "reply": "\U0001f60a \u09a0\u09bf\u0995 \u0986\u099b\u09c7\u0964 \u0986\u09b0 \u0995\u09cb\u09a8\u09cb \u09a4\u09a5\u09cd\u09af \u09b2\u09be\u0997\u09b2\u09c7 \u099c\u09be\u09a8\u09be\u09ac\u09c7\u09a8\u0964"
     },
     "bye": {
         "keywords": [
             "bye",
-            "à¦¬à¦¿à¦¦à¦¾à¦¯à¦¼",
+            "\u09ac\u09bf\u09a6\u09be\u09af\u09bc",
             "allah hafez",
-            "à¦à¦²à§à¦²à¦¾à¦¹ à¦¹à¦¾à¦«à§à¦"
+            "\u0986\u09b2\u09cd\u09b2\u09be\u09b9 \u09b9\u09be\u09ab\u09c7\u099c"
         ],
-        "reply": "à¦à¦²à§à¦²à¦¾à¦¹ à¦¹à¦¾à¦«à§à¦à¥¤ ð\nà¦à¦¬à¦¾à¦° à¦ªà§à¦°à¦¯à¦¼à§à¦à¦¨ à¦¹à¦²à§ à¦à¦¬à¦¶à§à¦¯à¦ à¦®à§à¦¸à§à¦ à¦à¦°à¦¬à§à¦¨à¥¤"
+        "reply": "\u0986\u09b2\u09cd\u09b2\u09be\u09b9 \u09b9\u09be\u09ab\u09c7\u099c\u0964 \U0001f49a\n\u0986\u09ac\u09be\u09b0 \u09aa\u09cd\u09b0\u09af\u09bc\u09cb\u099c\u09a8 \u09b9\u09b2\u09c7 \u0985\u09ac\u09b6\u09cd\u09af\u0987 \u09ae\u09c7\u09b8\u09c7\u099c \u0995\u09b0\u09ac\u09c7\u09a8\u0964"
     }
 }
 
@@ -847,13 +848,13 @@ HUMAN_KEYWORDS = [
     "support",
     "agent",
     "human",
-    "à¦®à§à¦¯à¦¾à¦¨à§à¦à¦¾à¦°",
-    "à¦®à¦¾à¦¨à§à¦·",
-    "à¦à¦­à¦¿à¦¯à§à¦",
+    "\u09ae\u09cd\u09af\u09be\u09a8\u09c7\u099c\u09be\u09b0",
+    "\u09ae\u09be\u09a8\u09c1\u09b7",
+    "\u0985\u09ad\u09bf\u09af\u09cb\u0997",
     "problem",
-    "à¦¯à§à¦à¦¾à¦¯à§à¦",
-    "à¦à¦¥à¦¾ à¦¬à¦²à¦¤à§ à¦à¦¾à¦",
-    "à¦²à¦¾à¦à¦­",
+    "\u09af\u09cb\u0997\u09be\u09af\u09cb\u0997",
+    "\u0995\u09a5\u09be \u09ac\u09b2\u09a4\u09c7 \u099a\u09be\u0987",
+    "\u09b2\u09be\u0987\u09ad",
     "customer care"
 ]
 
@@ -862,7 +863,7 @@ RESUME_KEYWORDS = [
     "resume",
     "bot",
     "bot resume",
-    "à¦¬à¦ à¦à¦¾à¦²à§"
+    "\u09ac\u099f \u099a\u09be\u09b2\u09c1"
 ]
 
 
@@ -880,7 +881,7 @@ def start_human_mode(user_id):
 
 def admin_resume(user_id):
     disable_human_mode(user_id)
-    return "Bot Service à¦à¦¾à¦²à§ à¦¹à¦¯à¦¼à§à¦à§à¥¤"
+    return "Bot Service \u099a\u09be\u09b2\u09c1 \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964"
 
 
 def handle_human_mode(user_id, message):
@@ -903,11 +904,11 @@ def handle_human_mode(user_id, message):
 # ==========================================================
 
 ORDER_KEYWORDS = [
-    "à¦à¦°à§à¦¡à¦¾à¦°",
-    "à¦à¦°à§à¦¡à¦¾à¦° à¦à¦°à¦¤à§ à¦à¦¾à¦",
+    "\u0985\u09b0\u09cd\u09a1\u09be\u09b0",
+    "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u0987",
     "order",
     "buy",
-    "à¦à¦¿à¦¨à¦¤à§ à¦à¦¾à¦"
+    "\u0995\u09bf\u09a8\u09a4\u09c7 \u099a\u09be\u0987"
 ]
 
 
@@ -915,12 +916,12 @@ def start_order(user_id):
     last_product = get_last_product(user_id)
 
     if not last_product:
-        return "à¦à¦°à§à¦¡à¦¾à¦° à¦¶à§à¦°à§ à¦à¦°à¦¤à§ à¦ªà§à¦°à¦¥à¦®à§ à¦à¦à¦à¦¿ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨à¥¤"
+        return "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09a4\u09c7 \u09aa\u09cd\u09b0\u09a5\u09ae\u09c7 \u098f\u0995\u099f\u09bf \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 
     product = get_product_by_name(last_product)
 
     if not product:
-        return "à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦ à¦à§à¦à¦à§ à¦ªà¦¾à¦à¦¯à¦¼à¦¾ à¦¯à¦¾à¦¯à¦¼à¦¨à¦¿à¥¤ à¦à¦¬à¦¾à¦° à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨à¥¤"
+        return "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u0996\u09c1\u0981\u099c\u09c7 \u09aa\u09be\u0993\u09af\u09bc\u09be \u09af\u09be\u09af\u09bc\u09a8\u09bf\u0964 \u0986\u09ac\u09be\u09b0 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 
     ORDER_STEPS[user_id] = {
         "step": "name",
@@ -931,7 +932,7 @@ def start_order(user_id):
         "address": ""
     }
 
-    return f"ð {product.get('name', '')} à¦à¦°à§à¦¡à¦¾à¦° à¦à¦°à¦¤à§ à¦à¦¾à¦à§à¦à§à¦¨à¥¤\n\nà¦à¦ªà¦¨à¦¾à¦° à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨à¥¤"
+    return f"\U0001f4dd {product.get('name', '')} \u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u099a\u09cd\u099b\u09c7\u09a8\u0964\n\n\u0986\u09aa\u09a8\u09be\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 
 
 def handle_order(user_id, message):
@@ -944,17 +945,17 @@ def handle_order(user_id, message):
     if session["step"] == "name":
         session["name"] = raw_message
         session["step"] = "phone"
-        return "ð à¦à¦ªà¦¨à¦¾à¦° à¦®à§à¦¬à¦¾à¦à¦² à¦¨à¦®à§à¦¬à¦° à¦²à¦¿à¦à§à¦¨à¥¤"
+        return "\U0001f4de \u0986\u09aa\u09a8\u09be\u09b0 \u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09a8\u09ae\u09cd\u09ac\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 
     if session["step"] == "phone":
         phone = normalize(raw_message).replace(" ", "")
 
         if not re.fullmatch(r"01\d{9}", phone):
-            return "ð à¦¸à¦ à¦¿à¦ à§§à§§ à¦¸à¦à¦à§à¦¯à¦¾à¦° à¦®à§à¦¬à¦¾à¦à¦² à¦¨à¦®à§à¦¬à¦° à¦²à¦¿à¦à§à¦¨à¥¤ à¦à¦¦à¦¾à¦¹à¦°à¦£: 017XXXXXXXX"
+            return "\U0001f4de \u09b8\u09a0\u09bf\u0995 \u09e7\u09e7 \u09b8\u0982\u0996\u09cd\u09af\u09be\u09b0 \u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09a8\u09ae\u09cd\u09ac\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964 \u0989\u09a6\u09be\u09b9\u09b0\u09a3: 017XXXXXXXX"
 
         session["phone"] = phone
         session["step"] = "address"
-        return "ð à¦à¦ªà¦¨à¦¾à¦° à¦¸à¦®à§à¦ªà§à¦°à§à¦£ à¦ à¦¿à¦à¦¾à¦¨à¦¾ à¦²à¦¿à¦à§à¦¨à¥¤"
+        return "\U0001f4cd \u0986\u09aa\u09a8\u09be\u09b0 \u09b8\u09ae\u09cd\u09aa\u09c2\u09b0\u09cd\u09a3 \u09a0\u09bf\u0995\u09be\u09a8\u09be \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
 
     if session["step"] == "address":
         session["address"] = raw_message
@@ -979,11 +980,11 @@ def handle_order(user_id, message):
 
         return (
             f"{ORDER_SUCCESS_REPLY}\n\n"
-            f"ðï¸ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦: {order['product']}\n"
-            f"ð¤ à¦¨à¦¾à¦®: {order['customer_name']}\n"
-            f"ð à¦«à§à¦¨: {order['phone']}\n"
-            f"ð à¦ à¦¿à¦à¦¾à¦¨à¦¾: {order['address']}\n"
-            f"ð Order ID: {order['id']}"
+            f"\U0001f6cd\ufe0f \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f: {order['product']}\n"
+            f"\U0001f464 \u09a8\u09be\u09ae: {order['customer_name']}\n"
+            f"\U0001f4de \u09ab\u09cb\u09a8: {order['phone']}\n"
+            f"\U0001f4cd \u09a0\u09bf\u0995\u09be\u09a8\u09be: {order['address']}\n"
+            f"\U0001f194 Order ID: {order['id']}"
         )
 
     return None
@@ -1008,12 +1009,12 @@ def suggest_similar_product(message):
     if not products:
         return None
 
-    text = "ð à¦à¦ªà¦¨à¦¾à¦° à¦à¦¥à¦¾à¦° à¦¸à¦¾à¦¥à§ à¦®à¦¿à¦² à¦¥à¦¾à¦à¦¾ à¦à¦¿à¦à§ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦:\n\n"
+    text = "\U0001f60c \u0986\u09aa\u09a8\u09be\u09b0 \u0995\u09a5\u09be\u09b0 \u09b8\u09be\u09a5\u09c7 \u09ae\u09bf\u09b2 \u09a5\u09be\u0995\u09be \u0995\u09bf\u099b\u09c1 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f:\n\n"
 
     for product in products:
-        text += f"â¢ {product.get('name', '')}\n"
+        text += f"\u2022 {product.get('name', '')}\n"
 
-    text += "\nà¦¯à§à¦à¦¿ à¦à¦¾à¦¨à¦¤à§ à¦à¦¾à¦¨, à¦¶à§à¦§à§ à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨à¥¤"
+    text += "\n\u09af\u09c7\u099f\u09bf \u099c\u09be\u09a8\u09a4\u09c7 \u099a\u09be\u09a8, \u09b6\u09c1\u09a7\u09c1 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
     return text
 
 
@@ -1173,7 +1174,7 @@ def typing_off(recipient_id):
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Sabuj Bari Messenger Bot Running â", 200
+    return "Sabuj Bari Messenger Bot Running \u2705", 200
 
 
 @app.route("/webhook", methods=["GET"])
@@ -1234,9 +1235,9 @@ def process_message(user_id, message):
 
             if attachments:
                 reply = (
-                    "ð· à¦à¦¬à¦¿ à¦ªà§à¦¯à¦¼à§à¦à¦¿à¥¤\n\n"
-                    "à¦à¦¨à§à¦à§à¦°à¦¹ à¦à¦°à§ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦à§à¦° à¦¨à¦¾à¦® à¦²à¦¿à¦à§à¦¨ à¦à¦¥à¦¬à¦¾ "
-                    "à¦à¦¬à¦¿à¦à¦¿ à¦à§à¦¨ à¦ªà§à¦°à§à¦¡à¦¾à¦à§à¦ à¦¸à¦®à§à¦ªà¦°à§à¦à§ à¦à¦¾à¦¨à¦¤à§ à¦à¦¾à¦¨ à¦¤à¦¾ à¦¬à¦²à§à¦¨à¥¤"
+                    "\U0001f4f7 \u099b\u09ac\u09bf \u09aa\u09c7\u09af\u09bc\u09c7\u099b\u09bf\u0964\n\n"
+                    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8 \u0985\u09a5\u09ac\u09be "
+                    "\u099b\u09ac\u09bf\u099f\u09bf \u0995\u09cb\u09a8 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b8\u09ae\u09cd\u09aa\u09b0\u09cd\u0995\u09c7 \u099c\u09be\u09a8\u09a4\u09c7 \u099a\u09be\u09a8 \u09a4\u09be \u09ac\u09b2\u09c1\u09a8\u0964"
                 )
             else:
                 reply = DEFAULT_REPLY
@@ -1252,7 +1253,7 @@ def process_message(user_id, message):
 
         send_message(
             user_id,
-            "â à¦¸à¦¾à¦®à¦¯à¦¼à¦¿à¦ à¦¸à¦®à¦¸à§à¦¯à¦¾ à¦¹à¦¯à¦¼à§à¦à§à¥¤ à¦à¦¨à§à¦à§à¦°à¦¹ à¦à¦°à§ à¦à¦¬à¦¾à¦° à¦à§à¦·à§à¦à¦¾ à¦à¦°à§à¦¨à¥¤"
+            "\u274c \u09b8\u09be\u09ae\u09af\u09bc\u09bf\u0995 \u09b8\u09ae\u09b8\u09cd\u09af\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964 \u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u0986\u09ac\u09be\u09b0 \u099a\u09c7\u09b7\u09cd\u099f\u09be \u0995\u09b0\u09c1\u09a8\u0964"
         )
 
 
