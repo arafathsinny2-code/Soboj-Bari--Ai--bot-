@@ -1,1 +1,307 @@
-[]
+[
+  {
+    "id": "camera_memory",
+    "title": "Camera Memory Card",
+    "keywords": [
+      "32gb",
+      "memory",
+      "memory card",
+      "মেমোরি",
+      "মেমোরি কার্ড"
+    ],
+    "reply": "💾 Premium Digital Camera, Instant Print Camera এবং 4K Flip Camera-এর সাথে 32GB Memory Card দেওয়া হয়।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "camera_games",
+    "title": "Camera Games",
+    "keywords": [
+      "game",
+      "games",
+      "গেম"
+    ],
+    "reply": "🎮 Instant Print Camera এবং 4K Flip Camera-তে Built-in Games রয়েছে।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "print_paper",
+    "title": "Print Paper",
+    "keywords": [
+      "paper",
+      "paper roll",
+      "print paper",
+      "পেপার",
+      "রোল"
+    ],
+    "reply": "🖨️ Instant Print Camera-এর সাথে ৪টি Print Paper Roll ফ্রি পাবেন। অতিরিক্ত Paper Roll আমাদের কাছ থেকে আলাদাভাবে কিনতে পারবেন।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "print_capacity",
+    "title": "Print Capacity",
+    "keywords": [
+      "400",
+      "400 photo",
+      "ছবি",
+      "প্রিন্ট"
+    ],
+    "reply": "📷 ৪টি Paper Roll দিয়ে প্রায় ৪০০+ ছবি Print করা যাবে।",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "earbuds_battery",
+    "title": "Earbuds Battery",
+    "keywords": [
+      "battery",
+      "backup",
+      "চার্জ",
+      "ব্যাটারি"
+    ],
+    "reply": "🔋 Clip-On Open Ear Wireless Earbuds-এর Battery Backup প্রায় 16 ঘণ্টা।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "earbuds_call",
+    "title": "Earbuds Call",
+    "keywords": [
+      "phone call",
+      "মাইক্রোফোন",
+      "কথা বলা"
+    ],
+    "reply": "📞 এই Earbuds দিয়ে ফোনে কথা বলা যায়। Built-in Microphone, Clear Voice এবং Call Receive/Reject Support রয়েছে।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "galaxy_rotation",
+    "title": "Galaxy Rotation",
+    "keywords": [
+      "360",
+      "rotation",
+      "ঘোরে",
+      "rotate"
+    ],
+    "reply": "🌌 Galaxy Projector 360° Auto Rotation করে এবং পুরো রুমে Projection দেখায়।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "galaxy_bluetooth",
+    "title": "Galaxy Bluetooth",
+    "keywords": [
+      "bluetooth speaker",
+      "speaker"
+    ],
+    "reply": "🔊 Galaxy Projector-এ Bluetooth Speaker Support রয়েছে।",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "galaxy_noise",
+    "title": "Galaxy White Noise",
+    "keywords": [
+      "white noise",
+      "noise"
+    ],
+    "reply": "🌙 Galaxy Projector-এ White Noise Feature রয়েছে।",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "galaxy_modes",
+    "title": "Galaxy Modes",
+    "keywords": [
+      "13 mode",
+      "13",
+      "theme",
+      "scene"
+    ],
+    "reply": "🎨 Galaxy Projector-এ 13টি Color & Scene Mode রয়েছে।",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "juicer_motor",
+    "title": "Juicer Motor",
+    "keywords": [
+      "brushless",
+      "motor",
+      "মোটর"
+    ],
+    "reply": "🥤 Mini Juicer-এ High Quality Brushless Motor ব্যবহার করা হয়েছে। এটি শক্তিশালী, টেকসই এবং ফল-সবজি ব্লেন্ড করার জন্য উপযুক্ত।",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "delivery",
+    "title": "Delivery",
+    "keywords": [
+      "delivery",
+      "ডেলিভারি",
+      "delivery time",
+      "কত দিনে",
+      "courier"
+    ],
+    "reply": "🚚 আমরা Steadfast Courier-এর মাধ্যমে সারা বাংলাদেশে হোম ডেলিভারি করে থাকি। সাধারণত ২–৪ দিনের মধ্যে ডেলিভারি সম্পন্ন হয়। আপনার জেলা ও থানার উপর ভিত্তি করে সময় কিছুটা কম বা বেশি হতে পারে।",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "payment",
+    "title": "Payment",
+    "keywords": [
+      "payment",
+      "cod",
+      "cash on delivery",
+      "পেমেন্ট",
+      "ক্যাশ অন ডেলিভারি"
+    ],
+    "reply": "💳 আমরা Cash on Delivery (COD) সুবিধা দিয়ে থাকি। প্রোডাক্ট হাতে পেয়ে তারপর টাকা পরিশোধ করতে পারবেন। অগ্রিম পেমেন্ট বাধ্যতামূলক নয়। 😊",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "bkash",
+    "title": "Bkash",
+    "keywords": [
+      "bkash",
+      "বিকাশ",
+      "bkash payment"
+    ],
+    "reply": "💳 বিকাশ (Personal)\n\n📱01780618736",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "nagad",
+    "title": "Nagad",
+    "keywords": [
+      "nagad",
+      "নগদ"
+    ],
+    "reply": "💳 নগদ (Personal)\n\n📱01780618736",
+    "priority": 10,
+    "active": true
+  },
+  {
+    "id": "bank",
+    "title": "Bank",
+    "keywords": [
+      "bank",
+      "ব্যাংক"
+    ],
+    "reply": "🏦 ব্যাংক ট্রান্সফারের সুবিধাও রয়েছে। বিস্তারিত জানতে ইনবক্স করুন।",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "location",
+    "title": "Location",
+    "keywords": [
+      "location",
+      "লোকেশন",
+      "shop",
+      "address"
+    ],
+    "reply": "📍 আমাদের লোকেশন\n\nভৈরব, কিশোরগঞ্জ।\n\nআসার আগে অনুগ্রহ করে ফোন করে সময় নিশ্চিত করুন।\n\n📞01780618736",
+    "priority": 9,
+    "active": true
+  },
+  {
+    "id": "review",
+    "title": "Review",
+    "keywords": [
+      "review",
+      "reviews",
+      "feedback",
+      "রিভিউ"
+    ],
+    "reply": "⭐ আমাদের কাস্টমারদের অনেক ভালো রিভিউ রয়েছে। আমাদের Page Review সেকশন দেখে নিতে পারেন।",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "warranty",
+    "title": "Warranty",
+    "keywords": [
+      "warranty",
+      "guarantee",
+      "ওয়ারেন্টি",
+      "গ্যারান্টি"
+    ],
+    "reply": "🛡️ ওয়ারেন্টি বা গ্যারান্টি নেই। তবে আমরা সর্বোচ্চ মানের প্রোডাক্ট সরবরাহ করি। 😊",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "quality",
+    "title": "Quality",
+    "keywords": [
+      "quality",
+      "original",
+      "quality kemon",
+      "অরিজিনাল",
+      "কোয়ালিটি"
+    ],
+    "reply": "💯 আমরা সরাসরি চীন থেকে প্রোডাক্ট ইমপোর্ট করি। ভালো মানের প্রোডাক্ট, আকর্ষণীয় দাম এবং বিশ্বস্ত সার্ভিস—এটাই আমাদের অঙ্গীকার।",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "wholesale",
+    "title": "Wholesale",
+    "keywords": [
+      "wholesale",
+      "dealer",
+      "reseller",
+      "পাইকারি"
+    ],
+    "reply": "📦 পাইকারি অর্ডারের জন্য যোগাযোগ করুন।\n\n👤Arafat Rahman\n\n📞01780618736\n\n💬WhatsApp:01780618736",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "tracking",
+    "title": "Tracking",
+    "keywords": [
+      "tracking",
+      "track",
+      "parcel",
+      "স্ট্যাটাস",
+      "পার্সেল"
+    ],
+    "reply": "📦 আপনার পার্সেলের আপডেট জানতে আপনার মোবাইল নম্বর পাঠান। আমরা দেখে আপনাকে জানিয়ে দেব। 😊",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "return",
+    "title": "Return",
+    "keywords": [
+      "return",
+      "refund",
+      "exchange",
+      "রিটার্ন"
+    ],
+    "reply": "🔄 রিটার্ন করতে পারবেন। ডেলিভারির ২৪ ঘণ্টার মধ্যে যোগাযোগ করতে হবে। রিটার্নের ক্ষেত্রে ৳১২০ কুরিয়ার চার্জ প্রযোজ্য।",
+    "priority": 8,
+    "active": true
+  },
+  {
+    "id": "stock",
+    "title": "Stock",
+    "keywords": [
+      "stock",
+      "available",
+      "স্টক"
+    ],
+    "reply": "📦 স্টক জানতে অনুগ্রহ করে প্রোডাক্টের নাম লিখে পাঠান। আমি সঙ্গে সঙ্গে জানিয়ে দেব। 😊",
+    "priority": 8,
+    "active": true
+  }
+]
