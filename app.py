@@ -2153,7 +2153,7 @@ def is_small_talk(message):
 
 HUMAN_KEYWORDS = [
 
-    "admin",
+    
 
     "support",
 
@@ -2426,7 +2426,15 @@ def generate_reply(user_id, message):
         return DEFAULT_REPLY
 
     save_message(user_id, message)
-
+    # Admin / Bot Resume
+    if normalize(message) in [
+        "admin_resume",
+        "resume",
+        "bot",
+        "bot resume"
+    ]:
+        reset_unknown(user_id)
+        return admin_resume(user_id)
     # 1. Ongoing Order Handling (highest priority)
     reply = handle_order(user_id, message)
     if reply:
