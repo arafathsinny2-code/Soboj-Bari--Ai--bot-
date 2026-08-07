@@ -2229,24 +2229,26 @@ def stop_human_mode(user_id):
 # CHECK MODE
 # ==========================================================
 
-def handle_human_mode(
+def handle_human_mode(user_id, message):
 
-    user_id,
+    # Resume bot command
+    if normalize(message) in [
+        "admin_resume",
+        "resume",
+        "bot",
+        "bot resume"
+    ]:
+        return admin_resume(user_id)
 
-    message
-
-):
-
+    # New human request
     if is_human_request(message):
-
         return start_human_mode(user_id)
 
+    # Already in human mode
     if is_human_mode(user_id):
-
         return HUMAN_REPLY
 
     return None
-
 # ==========================================================
 # ADMIN COMMAND
 # ==========================================================
