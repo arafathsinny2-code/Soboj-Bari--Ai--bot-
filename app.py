@@ -1,7 +1,6 @@
-# -*- coding: ascii -*-
 # ==========================================================
-# SOBUJ BARI MESSENGER BOT
-# CLEAN FIXED VERSION
+# SECTION 1.1
+# IMPORTS
 # ==========================================================
 
 import os
@@ -14,9 +13,14 @@ import logging
 import requests
 
 from datetime import datetime
-from flask import Flask, request
-from dotenv import load_dotenv
 
+from flask import (
+    Flask,
+    request,
+    jsonify
+)
+
+from dotenv import load_dotenv
 
 # ==========================================================
 # LOAD ENV
@@ -24,32 +28,33 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 # ==========================================================
 # FLASK
 # ==========================================================
 
 app = Flask(__name__)
 
-
 # ==========================================================
 # FACEBOOK CONFIG
 # ==========================================================
 
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN", "")
-PAGE_ACCESS_TOKEN = os.getenv("PAGE_ACCESS_TOKEN", "")
-GRAPH_API = "https://graph.facebook.com/v23.0/me/messages"
 
+PAGE_ACCESS_TOKEN = os.getenv(
+    "PAGE_ACCESS_TOKEN",
+    ""
+)
+
+GRAPH_API = "https://graph.facebook.com/v23.0/me/messages"
 
 # ==========================================================
 # BOT CONFIG
 # ==========================================================
 
-BOT_NAME = "\u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf Assistant"
-PAGE_NAME = "\u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf"
+BOT_NAME = "সবুজ বাড়ি Assistant"
+PAGE_NAME = "সবুজ বাড়ি"
 DEFAULT_LANGUAGE = "bn"
-VERSION = "1.0.1"
-
+VERSION = "2.0.0"
 
 # ==========================================================
 # FILES
@@ -60,14 +65,12 @@ PRODUCT_FILE = os.path.join(DATA_DIR, "products.json")
 FAQ_FILE = os.path.join(DATA_DIR, "faq.json")
 ORDER_FILE = os.path.join(DATA_DIR, "orders.json")
 LOG_FILE = os.path.join(DATA_DIR, "bot.log")
-BACKUP_DIR = os.path.join(DATA_DIR, "backup")
 
 os.makedirs(DATA_DIR, exist_ok=True)
-os.makedirs(BACKUP_DIR, exist_ok=True)
-
 
 # ==========================================================
-# LOGGING
+# SECTION 1.2
+# LOGGING & GLOBAL MEMORY
 # ==========================================================
 
 logging.basicConfig(
@@ -81,88 +84,71 @@ logging.basicConfig(
 
 logger = logging.getLogger("SabujBariBot")
 
-
-def log_info(message):
-    logger.info(message)
-
-
-def log_error(message):
-    logger.error(message)
-
-
-# ==========================================================
-# GLOBAL MEMORY
-# ==========================================================
-
 USERS = {}
 ORDER_STEPS = {}
 UNKNOWN_COUNTER = {}
 
-PRODUCTS = []
-ORDERS = []
-FAQ_DATABASE = []
-
-PRODUCT_INDEX = {}
-PRODUCT_ALIASES = {}
-FAQ_INDEX = {}
-FAQ_CACHE = {}
-
-
-# ==========================================================
-# SETTINGS
-# ==========================================================
-
+MAX_MESSAGE_LENGTH = 2000
 MAX_HISTORY = 20
+ENABLE_LOGGING = True
 ENABLE_TYPING = True
+
 MIN_TYPING_DELAY = 0.8
 MAX_TYPING_DELAY = 1.8
 
+# ==========================================================
+# DEFAULT REPLIES (Updated according to new rules)
+# ==========================================================
+
+DEFAULT_REPLY = "দুঃখিত, আমি বিষয়টি বুঝতে পারিনি। অনুগ্রহ করে প্রোডাক্টের নাম বা প্রশ্নটি আবার লিখুন।"
+
+GREETING_REPLY = "আসসালামু আলাইকুম। সবুজ বাড়ি- এর সেল assistant আপনাকে স্বাগতম। আপনি কোন প্রোডাক্টটি খুঁজছেন জানাবেন ছবি দিন বা নাম বলুন"
+
+PRODUCT_NOT_FOUND_REPLY = "এই মডেলটি আমাদের টিম যাচাই করছে। অনুগ্রহ করে একটু অপেক্ষা করুন, আমরা দ্রুত আপনাকে জানাবো। 😊"
+
+ORDER_SUCCESS_REPLY = "✅ আপনার অর্ডার সফলভাবে গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি দ্রুত যোগাযোগ করবেন।"
+
+HUMAN_REPLY = "আপনার বিষয়টি এডমিনকে জানানো হচ্ছে, শীঘ্রই যোগাযোগ করা হবে।"
 
 # ==========================================================
-# DEFAULT REPLIES
+# HELPER FUNCTIONS
 # ==========================================================
 
-DEFAULT_REPLY = (
-    "\u09a6\u09c1\u0983\u0996\u09bf\u09a4, \u0986\u09ae\u09bf \u09ac\u09bf\u09b7\u09af\u09bc\u099f\u09bf \u09ac\u09c1\u099d\u09a4\u09c7 \u09aa\u09be\u09b0\u09bf\u09a8\u09bf\u0964 "
-    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09ac\u09be \u09aa\u09cd\u09b0\u09b6\u09cd\u09a8\u099f\u09bf \u0986\u09ac\u09be\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
-)
+def typing_delay():
+    if ENABLE_TYPING:
+        time.sleep(random.uniform(MIN_TYPING_DELAY, MAX_TYPING_DELAY))
 
-ORDER_SUCCESS_REPLY = (
-    "\u2705 \u0986\u09aa\u09a8\u09be\u09b0 \u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u09b8\u09ab\u09b2\u09ad\u09be\u09ac\u09c7 \u0997\u09cd\u09b0\u09b9\u09a3 \u0995\u09b0\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964 "
-    "\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09a4\u09bf\u09a8\u09bf\u09a7\u09bf \u09a6\u09cd\u09b0\u09c1\u09a4 \u09af\u09cb\u0997\u09be\u09af\u09cb\u0997 \u0995\u09b0\u09ac\u09c7\u09a8\u0964"
-)
+def log_info(message):
+    if ENABLE_LOGGING:
+        logger.info(message)
 
-HUMAN_REPLY = (
-    "\U0001f468\u200d\U0001f4bc \u0986\u09aa\u09a8\u09be\u09b0 \u0985\u09a8\u09c1\u09b0\u09cb\u09a7\u099f\u09bf \u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u099f\u09bf\u09ae\u09c7\u09b0 \u0995\u09be\u099b\u09c7 \u09aa\u09be\u09a0\u09be\u09a8\u09cb \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964\n\n"
-    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u098f\u0995\u099f\u09c1 \u0985\u09aa\u09c7\u0995\u09cd\u09b7\u09be \u0995\u09b0\u09c1\u09a8\u0964\n\n"
-    "\u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09a4\u09bf\u09a8\u09bf\u09a7\u09bf \u0996\u09c1\u09ac \u09a6\u09cd\u09b0\u09c1\u09a4 \u0986\u09aa\u09a8\u09be\u09b0 \u09b8\u09be\u09a5\u09c7 \u09af\u09cb\u0997\u09be\u09af\u09cb\u0997 \u0995\u09b0\u09ac\u09c7\u09a8\u0964 \U0001f60a"
-)
-
+def log_error(message):
+    logger.error(message)
 
 # ==========================================================
+# SECTION 1.3
 # JSON DATABASE
 # ==========================================================
+
+BACKUP_DIR = os.path.join(DATA_DIR, "backup")
+os.makedirs(BACKUP_DIR, exist_ok=True)
 
 def ensure_json_file(path, default_data):
     if not os.path.exists(path):
         with open(path, "w", encoding="utf-8") as f:
             json.dump(default_data, f, ensure_ascii=False, indent=4)
 
-
 ensure_json_file(PRODUCT_FILE, [])
 ensure_json_file(FAQ_FILE, [])
 ensure_json_file(ORDER_FILE, [])
 
-
 def load_json(path):
     try:
         with open(path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-            return data if isinstance(data, list) else []
+            return json.load(f)
     except Exception as e:
-        log_error(f"Load JSON Error ({path}) : {e}")
+        log_error(f"Load JSON Error : {e}")
         return []
-
 
 def save_json(path, data):
     try:
@@ -170,87 +156,47 @@ def save_json(path, data):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True
     except Exception as e:
-        log_error(f"Save JSON Error ({path}) : {e}")
+        log_error(f"Save JSON Error : {e}")
         return False
 
+PRODUCTS = load_json(PRODUCT_FILE)
+ORDERS = load_json(ORDER_FILE)
 
 # ==========================================================
+# SECTION 1.4
 # NORMALIZE ENGINE
 # ==========================================================
 
-BANGLA_DIGITS = {
-    0x09E6: "0",
-    0x09E7: "1",
-    0x09E8: "2",
-    0x09E9: "3",
-    0x09EA: "4",
-    0x09EB: "5",
-    0x09EC: "6",
-    0x09ED: "7",
-    0x09EE: "8",
-    0x09EF: "9",
-}
-
+BANGLA_DIGITS = str.maketrans("০১২৩৪৫৬৭৮৯", "0123456789")
 
 def normalize(text):
     if text is None:
         return ""
-
-    text = str(text).translate(BANGLA_DIGITS).lower().strip()
+    text = str(text)
+    text = text.translate(BANGLA_DIGITS)
+    text = text.lower().strip()
     text = re.sub(r"\s+", " ", text)
     text = re.sub(r"[^\w\s\u0980-\u09FF]", " ", text)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
 
-
 def safe_text(text):
+    if text is None:
+        return ""
     return normalize(text)
 
+def keyword_match(message, keywords):
+    msg = normalize(message)
+    for keyword in keywords:
+        if normalize(keyword) in msg:
+            return True
+    return False
 
 def is_empty(text):
     return len(normalize(text)) == 0
 
-
-def keyword_match(message, keywords):
-    """
-    General contains matcher.
-    Product/FAQ matching can use partial phrases.
-    """
-    msg = normalize(message)
-
-    for keyword in keywords:
-        key = normalize(keyword)
-        if key and key in msg:
-            return True
-
-    return False
-
-
-def intent_keyword_match(message, keywords):
-    """
-    Safer matcher for HUMAN intents.
-    Prevents 'phone' from matching 'headphone'.
-    """
-    msg = normalize(message)
-
-    if not msg:
-        return False
-
-    padded_msg = f" {msg} "
-
-    for keyword in keywords:
-        key = normalize(keyword)
-
-        if not key:
-            continue
-
-        if f" {key} " in padded_msg:
-            return True
-
-    return False
-
-
 # ==========================================================
+# SECTION 1.5
 # USER SESSION & MEMORY
 # ==========================================================
 
@@ -258,6 +204,7 @@ def get_user(user_id):
     if user_id not in USERS:
         USERS[user_id] = {
             "id": user_id,
+            "name": "",
             "language": DEFAULT_LANGUAGE,
             "last_message": "",
             "last_product": "",
@@ -267,960 +214,638 @@ def get_user(user_id):
             "created_at": datetime.now().isoformat(),
             "updated_at": datetime.now().isoformat()
         }
-
     return USERS[user_id]
-
 
 def save_message(user_id, message):
     user = get_user(user_id)
-
     user["last_message"] = message
     user["updated_at"] = datetime.now().isoformat()
-
     user["history"].append({
         "time": datetime.now().isoformat(),
         "message": message
     })
-
     if len(user["history"]) > MAX_HISTORY:
         user["history"] = user["history"][-MAX_HISTORY:]
-
 
 def set_last_product(user_id, product_name):
     user = get_user(user_id)
     user["last_product"] = product_name
     user["updated_at"] = datetime.now().isoformat()
 
-
 def get_last_product(user_id):
     return get_user(user_id)["last_product"]
-
 
 def enable_human_mode(user_id):
     get_user(user_id)["human_mode"] = True
 
-
 def disable_human_mode(user_id):
     get_user(user_id)["human_mode"] = False
-
 
 def is_human_mode(user_id):
     return get_user(user_id)["human_mode"]
 
-
 # ==========================================================
-# PRODUCT DATABASE ENGINE
+# SECTION 2.1 - 2.6
+# PRODUCT ENGINE
 # ==========================================================
 
-def get_product_by_name(name):
-    name = normalize(name)
-
-    for product in PRODUCTS:
-        if normalize(product.get("name", "")) == name:
-            return product
-
-    return None
-
-
-def get_product_by_id(product_id):
-    for product in PRODUCTS:
-        if product.get("id") == product_id:
-            return product
-
-    return None
-
-
-def is_available(product):
-    return normalize(product.get("stock", "")) == "available"
-
+PRODUCT_INDEX = {}
+PRODUCT_ALIASES = {}
 
 def build_product_index():
     PRODUCT_INDEX.clear()
-
     for product in PRODUCTS:
-        if not product.get("active", True):
-            continue
-
-        name = normalize(product.get("name", ""))
-
-        if name:
-            PRODUCT_INDEX[name] = product
-
+        PRODUCT_INDEX[normalize(product["name"])] = product
         for keyword in product.get("keywords", []):
-            key = normalize(keyword)
+            PRODUCT_INDEX[normalize(keyword)] = product
 
-            if key:
-                PRODUCT_INDEX[key] = product
-
+def rebuild_product_index():
+    build_product_index()
 
 def build_alias_index():
     PRODUCT_ALIASES.clear()
-
     for product in PRODUCTS:
-        if not product.get("active", True):
-            continue
-
-        product_name = product.get("name", "")
-
-        if product_name:
-            PRODUCT_ALIASES[normalize(product_name)] = product_name
-
+        register_alias(product["name"], product["name"])
         for keyword in product.get("keywords", []):
-            key = normalize(keyword)
+            register_alias(keyword, product["name"])
 
-            if key:
-                PRODUCT_ALIASES[key] = product_name
+def register_alias(alias, product_name):
+    PRODUCT_ALIASES[normalize(alias)] = normalize(product_name)
 
-
-def rebuild_search_engine():
-    build_product_index()
-    build_alias_index()
-
-
-def find_product(message):
-    msg = normalize(message)
-
-    if msg in PRODUCT_INDEX:
-        return PRODUCT_INDEX[msg]
-
-    # Prefer longer/more-specific keywords first.
-    for keyword in sorted(PRODUCT_INDEX.keys(), key=len, reverse=True):
-        if keyword and keyword in msg:
-            return PRODUCT_INDEX[keyword]
-
+def get_product_by_name(name):
+    name = normalize(name)
+    for product in PRODUCTS:
+        if normalize(product["name"]) == name:
+            return product
     return None
-
-
-def find_product_by_alias(message):
-    msg = normalize(message)
-
-    for alias in sorted(PRODUCT_ALIASES.keys(), key=len, reverse=True):
-        if alias and alias in msg:
-            return get_product_by_name(PRODUCT_ALIASES[alias])
-
-    return None
-
 
 def smart_product_search(message):
-    product = find_product(message)
-
-    if product:
-        return product
-
-    return find_product_by_alias(message)
-
+    msg = normalize(message)
+    if msg in PRODUCT_INDEX:
+        return PRODUCT_INDEX[msg]
+    for keyword, product in PRODUCT_INDEX.items():
+        if keyword in msg:
+            return product
+    for alias, product_name in PRODUCT_ALIASES.items():
+        if alias in msg:
+            return get_product_by_name(product_name)
+    return None
 
 def suggest_products(message):
     msg = normalize(message)
-    results = []
-
+    result = []
     for product in PRODUCTS:
         score = 0
-
         for keyword in product.get("keywords", []):
-            key = normalize(keyword)
-
-            if key and key in msg:
+            if normalize(keyword) in msg:
                 score += 1
-
         if score:
-            results.append((score, product))
+            result.append((score, product))
+    result.sort(reverse=True, key=lambda x: x[0])
+    return [item[1] for item in result[:3]]
 
-    results.sort(reverse=True, key=lambda x: x[0])
-    return [item[1] for item in results[:3]]
-
-
-# ==========================================================
-# PRODUCT REPLY ENGINE
-# ==========================================================
-
-PRICE_KEYWORDS = [
-    "price",
-    "\u09a6\u09be\u09ae",
-    "\u09ae\u09c2\u09b2\u09cd\u09af",
-    "offer",
-    "\u0995\u09a4",
-    "tk",
-    "\u09f3"
-]
-
-COLOR_KEYWORDS = [
-    "color",
-    "colour",
-    "\u09b0\u0982",
-    "\u0995\u09be\u09b2\u09be\u09b0"
-]
-
-STOCK_KEYWORDS = [
-    "stock",
-    "\u09b8\u09cd\u099f\u0995",
-    "available",
-    "\u0986\u099b\u09c7"
-]
-
-DELIVERY_KEYWORDS = [
-    "delivery",
-    "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",
-    "\u0995\u09a4 \u09a6\u09bf\u09a8\u09c7",
-    "courier"
-]
-
-WARRANTY_KEYWORDS = [
-    "warranty",
-    "\u0997\u09cd\u09af\u09be\u09b0\u09be\u09a8\u09cd\u099f\u09bf",
-    "\u0993\u09af\u09bc\u09be\u09b0\u09c7\u09a8\u09cd\u099f\u09bf"
-]
-
-FEATURE_KEYWORDS = [
-    "feature",
-    "features",
-    "\u09b8\u09cd\u09aa\u09c7\u09b8\u09bf\u09ab\u09bf\u0995\u09c7\u09b6\u09a8",
-    "\u0995\u09bf \u0995\u09bf \u0986\u099b\u09c7"
-]
-
+def rebuild_search_engine():
+    rebuild_product_index()
+    build_alias_index()
 
 def format_product_reply(product):
-    features = product.get("features", [])
-    colors = product.get("colors", [])
+    features = ""
+    for item in product.get("features", []):
+        features += f"• {item}\n"
 
-    feature_text = "\n".join(f"\u2022 {item}" for item in features)
-    color_text = ", ".join(colors) if colors else "Not Available"
+    colors = ", ".join(product.get("colors", []))
 
-    return (
-        f"\U0001f6cd\ufe0f {product.get('name', '')}\n\n"
-        f"\U0001f4b0 \u09ae\u09c2\u09b2\u09cd\u09af: {product.get('price', '')}\n\n"
-        f"\U0001f4e6 Stock: {product.get('stock', 'Available')}\n\n"
-        f"\U0001f4dd {product.get('description', '')}\n\n"
-        f"\U0001f3a8 Color:\n{color_text}\n\n"
-        f"\u2728 \u09aa\u09cd\u09b0\u09a7\u09be\u09a8 Features:\n\n{feature_text}\n\n"
-        f"\U0001f6e1\ufe0f Warranty:\n{product.get('warranty', 'No Warranty')}\n\n"
-        f"\U0001f69a Delivery:\n{product.get('delivery', '\u09e8\u2013\u09ea \u09a6\u09bf\u09a8')}\n\n"
-        f"\U0001f4b3 Delivery Charge:\n\u09f3{product.get('delivery_charge', '100')}\n\n"
-        '\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u0987" \u09b2\u09bf\u0996\u09c1\u09a8\u0964'
-    )
+    return f"""পণ্যের নাম: {product['name']}
+মূল্য: {product['price']} টাকা (স্টক ক্লিয়ারেন্স অফার, ফিক্সড প্রাইস)
+বৈশিষ্ট্য:
+{features}
+রঙ: {colors if colors else "Not Available"}
 
+আমাদের পণ্যের মান ১০০% গ্যারান্টিযুক্ত। আমাদের পেইজে অনেক ভালো রিভিউ দেখতে পাবেন।
+
+ডেলিভারি চার্জ: ৳{product.get('delivery_charge', '100')}
+ডেলিভারি সময়: {product.get('delivery', '২–৪ দিন')}
+
+অর্ডার করতে "অর্ডার করতে চাই" লিখুন।"""
+
+PRICE_KEYWORDS = ["price", "দাম", "মূল্য", "offer", "কত", "tk", "৳", "pp"]
+COLOR_KEYWORDS = ["color", "colour", "রং", "কালার"]
+STOCK_KEYWORDS = ["stock", "স্টক", "available", "আছে"]
+DELIVERY_KEYWORDS = ["delivery", "ডেলিভারি", "কত দিনে", "courier"]
+WARRANTY_KEYWORDS = ["warranty", "গ্যারান্টি", "ওয়ারেন্টি"]
+FEATURE_KEYWORDS = ["feature", "features", "স্পেসিফিকেশন", "কি কি আছে"]
 
 def is_price_question(message):
     return keyword_match(message, PRICE_KEYWORDS)
 
-
 def price_reply(product):
-    return (
-        f"\U0001f4b0 {product.get('name', '')}\n\n"
-        f"\u09ae\u09c2\u09b2\u09cd\u09af\u0983 {product.get('price', '')}"
-    )
-
+    return f"মূল্য: {product['price']} টাকা (স্টক ক্লিয়ারেন্স অফার, ফিক্সড প্রাইস)"
 
 def color_reply(product):
     colors = product.get("colors", [])
-
     if not colors:
-        return "\u098f\u0987 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 Color \u09a4\u09a5\u09cd\u09af \u09a8\u09c7\u0987\u0964"
-
-    return "\U0001f3a8 Available Color:\n\n" + "\n".join(f"\u2022 {c}" for c in colors)
-
+        return "এই প্রোডাক্টের রঙের তথ্য নেই।"
+    return "রঙ:\n" + "\n".join(f"• {c}" for c in colors)
 
 def stock_reply(product):
-    return f"\U0001f4e6 Stock : {product.get('stock', 'Available')}"
-
+    return f"স্টক: {product['stock']}"
 
 def delivery_reply(product):
-    return (
-        "\U0001f69a Delivery Time\n\n"
-        f"{product.get('delivery', '\u09e8\u2013\u09ea \u09a6\u09bf\u09a8')}\n\n"
-        "\U0001f4b3 Delivery Charge\n\n"
-        f"\u09f3{product.get('delivery_charge', '100')}"
-    )
-
+    return f"""ডেলিভারি সময়: {product.get('delivery', '২–৪ দিন')}
+ডেলিভারি চার্জ: ৳{product.get('delivery_charge', '100')}"""
 
 def warranty_reply(product):
-    return (
-        "\U0001f6e1\ufe0f Warranty\n\n"
-        f"{product.get('warranty', 'No Warranty')}"
-    )
-
+    return f"ওয়ারেন্টি: {product.get('warranty', 'No Warranty')}"
 
 def feature_reply(product):
-    features = product.get("features", [])
-
-    if not features:
-        return "\u098f\u0987 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 Features \u09a4\u09a5\u09cd\u09af \u09a8\u09c7\u0987\u0964"
-
-    return "\u2728 \u09aa\u09cd\u09b0\u09a7\u09be\u09a8 Features\n\n" + "\n".join(
-        f"\u2022 {item}" for item in features
-    )
-
+    text = "বৈশিষ্ট্য:\n"
+    for item in product.get("features", []):
+        text += f"• {item}\n"
+    return text
 
 def product_reply(user_id, message):
     product = smart_product_search(message)
-
     if not product:
         return None
 
-    set_last_product(user_id, product.get("name", ""))
+    set_last_product(user_id, product["name"])
 
     if is_price_question(message):
         return price_reply(product)
-
     if keyword_match(message, COLOR_KEYWORDS):
         return color_reply(product)
-
     if keyword_match(message, STOCK_KEYWORDS):
         return stock_reply(product)
-
     if keyword_match(message, DELIVERY_KEYWORDS):
         return delivery_reply(product)
-
     if keyword_match(message, WARRANTY_KEYWORDS):
         return warranty_reply(product)
-
     if keyword_match(message, FEATURE_KEYWORDS):
         return feature_reply(product)
 
     return format_product_reply(product)
-
 
 def continue_last_product(user_id, message):
     last = get_last_product(user_id)
-
     if not last:
         return None
-
     product = get_product_by_name(last)
-
     if not product:
         return None
 
     if is_price_question(message):
         return price_reply(product)
-
     if keyword_match(message, COLOR_KEYWORDS):
         return color_reply(product)
-
     if keyword_match(message, STOCK_KEYWORDS):
         return stock_reply(product)
-
     if keyword_match(message, DELIVERY_KEYWORDS):
         return delivery_reply(product)
-
     if keyword_match(message, WARRANTY_KEYWORDS):
         return warranty_reply(product)
-
     if keyword_match(message, FEATURE_KEYWORDS):
         return feature_reply(product)
-
     return None
-
 
 def handle_product_message(user_id, message):
     reply = product_reply(user_id, message)
-
     if reply:
         return reply
-
-    return continue_last_product(user_id, message)
-
-
-# ==========================================================
-# PRODUCT RECOMMENDATION
-# ==========================================================
+    reply = continue_last_product(user_id, message)
+    if reply:
+        return reply
+    return None
 
 def list_products(limit=None):
     items = PRODUCTS[:limit] if limit else PRODUCTS
-
-    if not items:
-        return "\u098f\u0987 \u09ae\u09c1\u09b9\u09c2\u09b0\u09cd\u09a4\u09c7 \u0995\u09cb\u09a8\u09cb \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b2\u09cb\u09a1 \u0995\u09b0\u09be \u09a8\u09c7\u0987\u0964"
-
-    text = "\U0001f6cd\ufe0f \u0986\u09ae\u09be\u09a6\u09c7\u09b0 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09b8\u09ae\u09c2\u09b9\n\n"
-
-    for product in items:
-        text += f"\u2022 {product.get('name', '')} \u2014 {product.get('price', '')}\n"
-
-    return text.strip()
-
-
-def cheapest_product():
-    if not PRODUCTS:
-        return None
-
-    product = min(
-        PRODUCTS,
-        key=lambda x: int(x.get("price_value", 0) or 0)
-    )
-
-    return format_product_reply(product)
-
-
-def expensive_product():
-    if not PRODUCTS:
-        return None
-
-    product = max(
-        PRODUCTS,
-        key=lambda x: int(x.get("price_value", 0) or 0)
-    )
-
-    return format_product_reply(product)
-
+    text = "আমাদের প্রোডাক্টসমূহ:\n\n"
+    for p in items:
+        text += f"• {p['name']}\nমূল্য: {p['price']}\n\n"
+    return text
 
 def recommendation_reply(message):
     msg = normalize(message)
-
-    if "\u09b8\u09ac \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f" in msg or "all products" in msg:
+    if "সব" in msg or "all" in msg or "product" in msg:
         return list_products()
-
-    if "\u09b8\u09b8\u09cd\u09a4\u09be" in msg or "cheap" in msg:
-        return cheapest_product()
-
-    if "\u09a6\u09be\u09ae\u09bf" in msg or "expensive" in msg:
-        return expensive_product()
-
     return None
 
+# ==========================================================
+# SECTION 3
+# FAQ + CONVERSATION + HUMAN
+# ==========================================================
 
-# ==========================================================
-# FAQ DATABASE
-# ==========================================================
+FAQ_DATABASE = []
 
 def load_default_faq():
-    global FAQ_DATABASE
-
-    FAQ_DATABASE = [
+    FAQ_DATABASE.clear()
+    FAQ_DATABASE.extend([
         {
             "id": "delivery",
             "title": "Delivery",
-            "keywords": [
-                "delivery",
-                "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf",
-                "\u0995\u09a4 \u09a6\u09bf\u09a8\u09c7",
-                "courier",
-                "shipping"
-            ],
-            "reply": (
-                "\U0001f69a \u0986\u09ae\u09b0\u09be Steadfast Courier-\u098f\u09b0 \u09ae\u09be\u09a7\u09cd\u09af\u09ae\u09c7 \u09b8\u09be\u09b0\u09be \u09ac\u09be\u0982\u09b2\u09be\u09a6\u09c7\u09b6\u09c7 "
-                "\u09b9\u09cb\u09ae \u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf \u0995\u09b0\u09c7 \u09a5\u09be\u0995\u09bf\u0964 \u09b8\u09be\u09a7\u09be\u09b0\u09a3\u09a4 \u09e8\u2013\u09ea \u09a6\u09bf\u09a8\u09c7\u09b0 \u09ae\u09a7\u09cd\u09af\u09c7 "
-                "\u09a1\u09c7\u09b2\u09bf\u09ad\u09be\u09b0\u09bf \u09b8\u09ae\u09cd\u09aa\u09a8\u09cd\u09a8 \u09b9\u09af\u09bc\u0964"
-            ),
+            "keywords": ["delivery", "ডেলিভারি", "কত দিনে", "courier", "shipping"],
+            "reply": "সারা বাংলাদেশে Steadfast Courier এর মাধ্যমে হোম ডেলিভারি করা হয়। সাধারণত ২–৪ কার্যদিবস। ডেলিভারি চার্জ ৳১০০।",
             "priority": 10,
             "active": True
         },
         {
             "id": "payment",
             "title": "Payment",
-            "keywords": [
-                "payment",
-                "\u09aa\u09c7\u09ae\u09c7\u09a8\u09cd\u099f",
-                "cash on delivery",
-                "cod"
-            ],
-            "reply": (
-                "\U0001f4b3 \u0986\u09ae\u09b0\u09be Cash on Delivery (COD) \u09b8\u09c1\u09ac\u09bf\u09a7\u09be \u09a6\u09bf\u09af\u09bc\u09c7 \u09a5\u09be\u0995\u09bf\u0964 "
-                "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b9\u09be\u09a4\u09c7 \u09aa\u09c7\u09af\u09bc\u09c7 \u09a4\u09be\u09b0\u09aa\u09b0 \u099f\u09be\u0995\u09be \u09aa\u09b0\u09bf\u09b6\u09cb\u09a7 \u0995\u09b0\u09a4\u09c7 \u09aa\u09be\u09b0\u09ac\u09c7\u09a8\u0964"
-            ),
+            "keywords": ["payment", "পেমেন্ট", "cod", "cash on delivery", "কিভাবে টাকা দিব"],
+            "reply": "আমরা Cash on Delivery (COD) সুবিধা দিয়ে থাকি। পণ্য হাতে পেয়ে টাকা দিবেন।",
             "priority": 10,
             "active": True
+        },
+        {
+            "id": "return",
+            "title": "Return",
+            "keywords": ["return", "ফেরত", "refund", "রিটার্ন"],
+            "reply": "পণ্য পছন্দ না হলে ফেরত দিতে পারবেন। ডেলিভারি চার্জ ১২০ টাকা প্রযোজ্য। পণ্য অব্যবহৃত ও অরিজিনাল প্যাকেজিং সহ থাকতে হবে। ডেলিভারির ২৪ ঘণ্টার মধ্যে জানাতে হবে।",
+            "priority": 9,
+            "active": True
+        },
+        {
+            "id": "review",
+            "title": "Review",
+            "keywords": ["review", "রিভিউ", "feedback"],
+            "reply": "আমাদের পেইজে অসংখ্য বাস্তব কাস্টমারের রিভিউ রয়েছে। পেজ ভিজিট করে দেখতে পারেন।",
+            "priority": 8,
+            "active": True
         }
-    ]
+    ])
 
+load_default_faq()
+
+FAQ_INDEX = {}
+FAQ_CACHE = {}
 
 def build_faq_index():
     FAQ_INDEX.clear()
-
     for faq in FAQ_DATABASE:
         if not faq.get("active", True):
             continue
-
         for keyword in faq.get("keywords", []):
-            key = normalize(keyword)
-
-            if key:
-                FAQ_INDEX[key] = faq
-
+            FAQ_INDEX[normalize(keyword)] = faq
 
 def rebuild_faq_index():
     build_faq_index()
     FAQ_CACHE.clear()
 
-
-def find_faq(message):
+def fast_find_faq(message):
     msg = normalize(message)
-    best = None
-    best_score = 0
-
-    for faq in FAQ_DATABASE:
-        if not faq.get("active", True):
-            continue
-
-        score = 0
-
-        for keyword in faq.get("keywords", []):
-            key = normalize(keyword)
-
-            if key and key in msg:
-                score += 1
-
-        if score > best_score:
-            best_score = score
-            best = faq
-
-    return best
-
+    if msg in FAQ_CACHE:
+        return FAQ_CACHE[msg]
+    if msg in FAQ_INDEX:
+        FAQ_CACHE[msg] = FAQ_INDEX[msg]
+        return FAQ_INDEX[msg]
+    for keyword, faq in FAQ_INDEX.items():
+        if keyword in msg:
+            FAQ_CACHE[msg] = faq
+            return faq
+    return None
 
 def final_faq_reply(message):
-    faq = find_faq(message)
-    return faq.get("reply") if faq else None
+    faq = fast_find_faq(message)
+    if faq:
+        return faq["reply"]
+    return None
 
-
-# ==========================================================
-# CONVERSATION ENGINE
-# ==========================================================
+rebuild_faq_index()
 
 CONVERSATIONS = {
     "greeting": {
-        "keywords": [
-            "hi",
-            "hello",
-            "hey",
-            "\u09b9\u09cd\u09af\u09be\u09b2\u09cb",
-            "\u0986\u09b8\u09b8\u09be\u09b2\u09be\u09ae\u09c1 \u0986\u09b2\u09be\u0987\u0995\u09c1\u09ae",
-            "assalamu alaikum",
-            "slm",
-            "salam"
-        ],
-        "reply": (
-            "\u0986\u09b8\u09b8\u09be\u09b2\u09be\u09ae\u09c1 \u0986\u09b2\u09be\u0987\u0995\u09c1\u09ae\u0964 \u09b8\u09ac\u09c1\u099c \u09ac\u09be\u09a1\u09bc\u09bf-\u098f \u0986\u09aa\u09a8\u09be\u0995\u09c7 \u09b8\u09cd\u09ac\u09be\u0997\u09a4\u09ae\u0964 \U0001f60a\n\n"
-            "\u0986\u09aa\u09a8\u09bf \u0995\u09cb\u09a8 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u099f\u09bf \u0996\u09c1\u0981\u099c\u099b\u09c7\u09a8?\n"
-            "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8 \u0985\u09a5\u09ac\u09be \u099b\u09ac\u09bf \u09aa\u09be\u09a0\u09be\u09a8\u0964"
-        )
+        "keywords": ["hi", "hello", "hey", "হ্যালো", "আসসালামু আলাইকুম", "assalamu alaikum", "slm", "salam"],
+        "reply": GREETING_REPLY
     },
     "thanks": {
-        "keywords": [
-            "thanks",
-            "thank you",
-            "\u09a7\u09a8\u09cd\u09af\u09ac\u09be\u09a6",
-            "tnx",
-            "thx"
-        ],
-        "reply": "\u0986\u09aa\u09a8\u09be\u0995\u09c7\u0993 \u09a7\u09a8\u09cd\u09af\u09ac\u09be\u09a6\u0964 \U0001f49a\n\u0986\u09b0 \u0995\u09cb\u09a8\u09cb \u09a4\u09a5\u09cd\u09af \u09b2\u09be\u0997\u09b2\u09c7 \u099c\u09be\u09a8\u09be\u09ac\u09c7\u09a8\u0964"
+        "keywords": ["thanks", "thank you", "ধন্যবাদ", "tnx", "thx"],
+        "reply": "আপনাকেও ধন্যবাদ। আর কোনো তথ্য লাগলে জানাবেন।"
     },
     "ok": {
-        "keywords": [
-            "ok",
-            "okay",
-            "okk",
-            "\u09a0\u09bf\u0995 \u0986\u099b\u09c7",
-            "\u0986\u099a\u09cd\u099b\u09be",
-            "\u09b9\u09c1\u09ae"
-        ],
-        "reply": "\U0001f60a \u09a0\u09bf\u0995 \u0986\u099b\u09c7\u0964 \u0986\u09b0 \u0995\u09cb\u09a8\u09cb \u09a4\u09a5\u09cd\u09af \u09b2\u09be\u0997\u09b2\u09c7 \u099c\u09be\u09a8\u09be\u09ac\u09c7\u09a8\u0964"
+        "keywords": ["ok", "okay", "okk", "ঠিক আছে", "আচ্ছা", "হুম"],
+        "reply": "ঠিক আছে। আর কোনো তথ্য লাগলে জানাবেন।"
     },
     "bye": {
-        "keywords": [
-            "bye",
-            "\u09ac\u09bf\u09a6\u09be\u09af\u09bc",
-            "allah hafez",
-            "\u0986\u09b2\u09cd\u09b2\u09be\u09b9 \u09b9\u09be\u09ab\u09c7\u099c"
-        ],
-        "reply": "\u0986\u09b2\u09cd\u09b2\u09be\u09b9 \u09b9\u09be\u09ab\u09c7\u099c\u0964 \U0001f49a\n\u0986\u09ac\u09be\u09b0 \u09aa\u09cd\u09b0\u09af\u09bc\u09cb\u099c\u09a8 \u09b9\u09b2\u09c7 \u0985\u09ac\u09b6\u09cd\u09af\u0987 \u09ae\u09c7\u09b8\u09c7\u099c \u0995\u09b0\u09ac\u09c7\u09a8\u0964"
+        "keywords": ["bye", "বিদায়", "allah hafez", "আল্লাহ হাফেজ"],
+        "reply": "আল্লাহ হাফেজ। আবার প্রয়োজন হলে মেসেজ করবেন।"
     }
 }
 
-
 def conversation_reply(message):
     msg = normalize(message)
-    padded = f" {msg} "
-
     for item in CONVERSATIONS.values():
         for keyword in item["keywords"]:
-            key = normalize(keyword)
-
-            if key and f" {key} " in padded:
+            if normalize(keyword) in msg:
                 return item["reply"]
-
     return None
-
-
-# ==========================================================
-# HUMAN HANDOVER ENGINE
-# ==========================================================
 
 HUMAN_KEYWORDS = [
-    "support",
-    "agent",
-    "human",
-    "\u09ae\u09cd\u09af\u09be\u09a8\u09c7\u099c\u09be\u09b0",
-    "\u09ae\u09be\u09a8\u09c1\u09b7",
-    "\u0985\u09ad\u09bf\u09af\u09cb\u0997",
-    "problem",
-    "\u09af\u09cb\u0997\u09be\u09af\u09cb\u0997",
-    "\u0995\u09a5\u09be \u09ac\u09b2\u09a4\u09c7 \u099a\u09be\u0987",
-    "\u09b2\u09be\u0987\u09ad",
-    "customer care"
+    "admin", "support", "agent", "human", "ম্যানেজার", "মানুষ", "লোক",
+    "অভিযোগ", "problem", "call", "phone", "যোগাযোগ", "কথা বলতে চাই", "লাইভ",
+    "রিটার্ন", "ফেরত", "এক্সচেঞ্জ", "নষ্ট", "ভাঙা", "পেমেন্ট সমস্যা", "পণ্য পাইনি"
 ]
-
-RESUME_KEYWORDS = [
-    "admin_resume",
-    "resume",
-    "bot",
-    "bot resume",
-    "\u09ac\u099f \u099a\u09be\u09b2\u09c1"
-]
-
 
 def is_human_request(message):
-    # IMPORTANT:
-    # exact/whole phrase matching prevents
-    # "phone" from matching "headphone".
-    return intent_keyword_match(message, HUMAN_KEYWORDS)
-
-
-def start_human_mode(user_id):
-    enable_human_mode(user_id)
-    return HUMAN_REPLY
-
-
-def admin_resume(user_id):
-    disable_human_mode(user_id)
-    return "Bot Service \u099a\u09be\u09b2\u09c1 \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964"
-
+    return keyword_match(message, HUMAN_KEYWORDS)
 
 def handle_human_mode(user_id, message):
-    msg = normalize(message)
-
-    if msg in [normalize(x) for x in RESUME_KEYWORDS]:
-        return admin_resume(user_id)
-
     if is_human_request(message):
-        return start_human_mode(user_id)
-
+        enable_human_mode(user_id)
+        return HUMAN_REPLY
     if is_human_mode(user_id):
         return HUMAN_REPLY
-
     return None
 
-
 # ==========================================================
-# ORDER SYSTEM
+# SECTION 4.0
+# ORDER SYSTEM (Updated according to new rules)
 # ==========================================================
 
 ORDER_KEYWORDS = [
-    "\u0985\u09b0\u09cd\u09a1\u09be\u09b0",
-    "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u0987",
-    "order",
-    "buy",
-    "\u0995\u09bf\u09a8\u09a4\u09c7 \u099a\u09be\u0987"
+    "অর্ডার", "অর্ডার করতে চাই", "order", "buy", "কিনতে চাই", "confirm order"
 ]
-
 
 def start_order(user_id):
     last_product = get_last_product(user_id)
-
     if not last_product:
-        return "\u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u09b6\u09c1\u09b0\u09c1 \u0995\u09b0\u09a4\u09c7 \u09aa\u09cd\u09b0\u09a5\u09ae\u09c7 \u098f\u0995\u099f\u09bf \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
+        return "অর্ডার শুরু করতে প্রথমে একটি প্রোডাক্টের নাম লিখুন অথবা ছবি পাঠান।"
 
     product = get_product_by_name(last_product)
-
     if not product:
-        return "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u0996\u09c1\u0981\u099c\u09c7 \u09aa\u09be\u0993\u09af\u09bc\u09be \u09af\u09be\u09af\u09bc\u09a8\u09bf\u0964 \u0986\u09ac\u09be\u09b0 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
+        return "প্রোডাক্ট খুঁজে পাওয়া যায়নি। আবার প্রোডাক্টের নাম লিখুন।"
 
     ORDER_STEPS[user_id] = {
         "step": "name",
-        "product": product.get("name", ""),
-        "price": product.get("price", ""),
+        "product": product["name"],
+        "price": product["price"],
+        "color": "",
         "name": "",
         "phone": "",
+        "district": "",
+        "thana": "",
         "address": ""
     }
 
-    return f"\U0001f4dd {product.get('name', '')} \u0985\u09b0\u09cd\u09a1\u09be\u09b0 \u0995\u09b0\u09a4\u09c7 \u099a\u09be\u099a\u09cd\u099b\u09c7\u09a8\u0964\n\n\u0986\u09aa\u09a8\u09be\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
-
+    return (
+        f"অর্ডার কনফার্ম করার জন্য দয়া করে নিচের তথ্যগুলো দিন:\n\n"
+        f"পছন্দের পণ্য: {product['name']}\n\n"
+        f"আপনার নাম:"
+    )
 
 def handle_order(user_id, message):
     if user_id not in ORDER_STEPS:
         return None
 
     session = ORDER_STEPS[user_id]
-    raw_message = str(message).strip()
+    text = message.strip()
 
     if session["step"] == "name":
-        session["name"] = raw_message
+        session["name"] = text
         session["step"] = "phone"
-        return "\U0001f4de \u0986\u09aa\u09a8\u09be\u09b0 \u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09a8\u09ae\u09cd\u09ac\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
+        return "ফোন নাম্বার:"
 
-    if session["step"] == "phone":
-        phone = normalize(raw_message).replace(" ", "")
+    elif session["step"] == "phone":
+        session["phone"] = text
+        session["step"] = "district"
+        return "জেলা:"
 
-        if not re.fullmatch(r"01\d{9}", phone):
-            return "\U0001f4de \u09b8\u09a0\u09bf\u0995 \u09e7\u09e7 \u09b8\u0982\u0996\u09cd\u09af\u09be\u09b0 \u09ae\u09cb\u09ac\u09be\u0987\u09b2 \u09a8\u09ae\u09cd\u09ac\u09b0 \u09b2\u09bf\u0996\u09c1\u09a8\u0964 \u0989\u09a6\u09be\u09b9\u09b0\u09a3: 017XXXXXXXX"
+    elif session["step"] == "district":
+        session["district"] = text
+        session["step"] = "thana"
+        return "থানা:"
 
-        session["phone"] = phone
+    elif session["step"] == "thana":
+        session["thana"] = text
         session["step"] = "address"
-        return "\U0001f4cd \u0986\u09aa\u09a8\u09be\u09b0 \u09b8\u09ae\u09cd\u09aa\u09c2\u09b0\u09cd\u09a3 \u09a0\u09bf\u0995\u09be\u09a8\u09be \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
+        return "সম্পূর্ণ ঠিকানা:"
 
-    if session["step"] == "address":
-        session["address"] = raw_message
+    elif session["step"] == "address":
+        session["address"] = text
+        session["step"] = "color"
 
-        order = {
-            "id": "ORD-" + str(uuid.uuid4())[:8].upper(),
-            "user_id": user_id,
-            "customer_name": session["name"],
-            "phone": session["phone"],
-            "address": session["address"],
-            "product": session["product"],
-            "quantity": 1,
-            "price": session["price"],
-            "status": "Pending",
-            "payment": "Cash On Delivery",
-            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+        product = get_product_by_name(session["product"])
+        colors = product.get("colors", []) if product else []
 
-        ORDERS.append(order)
-        save_json(ORDER_FILE, ORDERS)
-        del ORDER_STEPS[user_id]
+        if colors:
+            return "রঙ (যদি প্রযোজ্য হয়):\n" + "\n".join(f"• {c}" for c in colors)
+        else:
+            # color skip
+            return finish_order(user_id, session)
 
-        return (
-            f"{ORDER_SUCCESS_REPLY}\n\n"
-            f"\U0001f6cd\ufe0f \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f: {order['product']}\n"
-            f"\U0001f464 \u09a8\u09be\u09ae: {order['customer_name']}\n"
-            f"\U0001f4de \u09ab\u09cb\u09a8: {order['phone']}\n"
-            f"\U0001f4cd \u09a0\u09bf\u0995\u09be\u09a8\u09be: {order['address']}\n"
-            f"\U0001f194 Order ID: {order['id']}"
-        )
+    elif session["step"] == "color":
+        session["color"] = text
+        return finish_order(user_id, session)
 
     return None
 
+def finish_order(user_id, session):
+    order = {
+        "id": "ORD-" + str(uuid.uuid4())[:8].upper(),
+        "user_id": user_id,
+        "customer_name": session["name"],
+        "phone": session["phone"],
+        "district": session.get("district", ""),
+        "thana": session.get("thana", ""),
+        "address": session["address"],
+        "product": session["product"],
+        "color": session.get("color", ""),
+        "quantity": 1,
+        "price": session["price"],
+        "delivery_charge": "100",
+        "status": "Pending",
+        "payment": "Cash On Delivery",
+        "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+
+    ORDERS.append(order)
+    save_json(ORDER_FILE, ORDERS)
+
+    del ORDER_STEPS[user_id]
+
+    summary = (
+        f"{ORDER_SUCCESS_REPLY}\n\n"
+        f"পণ্য: {order['product']}\n"
+        f"রঙ: {order['color'] or 'N/A'}\n"
+        f"নাম: {order['customer_name']}\n"
+        f"ফোন: {order['phone']}\n"
+        f"জেলা: {order['district']}\n"
+        f"থানা: {order['thana']}\n"
+        f"ঠিকানা: {order['address']}\n"
+        f"মূল্য: {order['price']}\n"
+        f"ডেলিভারি চার্জ: ৳100\n"
+        f"Order ID: {order['id']}\n\n"
+        f"পণ্য হাতে পেয়ে ডেলিভারি ম্যানের সামনে চেক করবেন।"
+    )
+    return summary
 
 # ==========================================================
-# FALLBACK
+# MAIN GENERATE REPLY
 # ==========================================================
 
 def increase_unknown(user_id):
     UNKNOWN_COUNTER[user_id] = UNKNOWN_COUNTER.get(user_id, 0) + 1
     return UNKNOWN_COUNTER[user_id]
 
-
 def reset_unknown(user_id):
     UNKNOWN_COUNTER[user_id] = 0
 
-
-def suggest_similar_product(message):
-    products = suggest_products(message)
-
-    if not products:
-        return None
-
-    text = "\U0001f60c \u0986\u09aa\u09a8\u09be\u09b0 \u0995\u09a5\u09be\u09b0 \u09b8\u09be\u09a5\u09c7 \u09ae\u09bf\u09b2 \u09a5\u09be\u0995\u09be \u0995\u09bf\u099b\u09c1 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f:\n\n"
-
-    for product in products:
-        text += f"\u2022 {product.get('name', '')}\n"
-
-    text += "\n\u09af\u09c7\u099f\u09bf \u099c\u09be\u09a8\u09a4\u09c7 \u099a\u09be\u09a8, \u09b6\u09c1\u09a7\u09c1 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8\u0964"
-    return text
-
-
 def fallback_reply(user_id, message):
-    suggestion = suggest_similar_product(message)
-
+    reset_unknown(user_id)
+    suggestion = suggest_products(message)
     if suggestion:
-        return suggestion
-
-    return DEFAULT_REPLY
-
-
-# ==========================================================
-# MAIN REPLY ENGINE
-# ==========================================================
+        text = PRODUCT_NOT_FOUND_REPLY + "\n\nআপনার কথার সাথে মিল থাকা কিছু প্রোডাক্ট:\n"
+        for p in suggestion:
+            text += f"• {p['name']}\n"
+        return text
+    return PRODUCT_NOT_FOUND_REPLY
 
 def generate_reply(user_id, message):
-    original_message = str(message or "").strip()
-    message = safe_text(original_message)
-
+    message = safe_text(message)
     if is_empty(message):
         return DEFAULT_REPLY
 
     save_message(user_id, message)
 
-    # 1. Resume command ALWAYS has highest priority.
-    if message in [normalize(x) for x in RESUME_KEYWORDS]:
-        reset_unknown(user_id)
-        return admin_resume(user_id)
-
-    # 2. Ongoing order.
-    reply = handle_order(user_id, original_message)
+    # 1. Ongoing Order
+    reply = handle_order(user_id, message)
     if reply:
         reset_unknown(user_id)
         return reply
 
-    # 3. Human handover.
+    # 2. Human / Escalation
     reply = handle_human_mode(user_id, message)
     if reply:
         reset_unknown(user_id)
         return reply
 
-    # 4. Conversation.
+    # 3. Conversation / Greeting
     reply = conversation_reply(message)
     if reply:
         reset_unknown(user_id)
         return reply
 
-    # 5. Product.
+    # 4. Product
     reply = handle_product_message(user_id, message)
     if reply:
         reset_unknown(user_id)
         return reply
 
-    # 6. Start order.
+    # 5. Start Order
     if keyword_match(message, ORDER_KEYWORDS):
         reply = start_order(user_id)
         if reply:
             reset_unknown(user_id)
             return reply
 
-    # 7. Recommendations.
+    # 6. Recommendation
     reply = recommendation_reply(message)
     if reply:
         reset_unknown(user_id)
         return reply
 
-    # 8. FAQ.
+    # 7. FAQ
     reply = final_faq_reply(message)
     if reply:
         reset_unknown(user_id)
         return reply
 
+    # 8. Fallback (Product not found rule)
     increase_unknown(user_id)
     return fallback_reply(user_id, message)
 
-
 # ==========================================================
-# FACEBOOK MESSENGER API
+# FACEBOOK API
 # ==========================================================
 
-HEADERS = {
-    "Content-Type": "application/json"
-}
-
+HEADERS = {"Content-Type": "application/json"}
 
 def graph_url():
     return f"{GRAPH_API}?access_token={PAGE_ACCESS_TOKEN}"
 
-
-def typing_delay():
-    if ENABLE_TYPING:
-        time.sleep(random.uniform(MIN_TYPING_DELAY, MAX_TYPING_DELAY))
-
-
 def send_message(recipient_id, message):
     payload = {
-        "recipient": {
-            "id": recipient_id
-        },
-        "message": {
-            "text": str(message)[:2000]
-        }
+        "recipient": {"id": recipient_id},
+        "message": {"text": message}
     }
-
     try:
-        response = requests.post(
-            graph_url(),
-            headers=HEADERS,
-            json=payload,
-            timeout=15
-        )
-
+        response = requests.post(graph_url(), headers=HEADERS, json=payload, timeout=15)
         response.raise_for_status()
         log_info(f"Message Sent -> {recipient_id}")
         return True
-
     except Exception as e:
         log_error(f"Send Error : {e}")
         return False
 
-
-def sender_action(recipient_id, action):
-    payload = {
-        "recipient": {
-            "id": recipient_id
-        },
-        "sender_action": action
-    }
-
+def mark_seen(recipient_id):
     try:
-        requests.post(
-            graph_url(),
-            headers=HEADERS,
-            json=payload,
-            timeout=10
-        )
-    except Exception:
+        requests.post(graph_url(), headers=HEADERS, json={
+            "recipient": {"id": recipient_id},
+            "sender_action": "mark_seen"
+        }, timeout=10)
+    except:
         pass
 
-
-def mark_seen(recipient_id):
-    sender_action(recipient_id, "mark_seen")
-
-
 def typing_on(recipient_id):
-    sender_action(recipient_id, "typing_on")
-
+    try:
+        requests.post(graph_url(), headers=HEADERS, json={
+            "recipient": {"id": recipient_id},
+            "sender_action": "typing_on"
+        }, timeout=10)
+    except:
+        pass
 
 def typing_off(recipient_id):
-    sender_action(recipient_id, "typing_off")
-
+    try:
+        requests.post(graph_url(), headers=HEADERS, json={
+            "recipient": {"id": recipient_id},
+            "sender_action": "typing_off"
+        }, timeout=10)
+    except:
+        pass
 
 # ==========================================================
-# FACEBOOK WEBHOOK
+# WEBHOOK
 # ==========================================================
 
 @app.route("/", methods=["GET"])
 def home():
-    return "Sabuj Bari Messenger Bot Running \u2705", 200
-
+    return "Sabuj Bari Messenger Bot Running ✅", 200
 
 @app.route("/webhook", methods=["GET"])
 def verify_webhook():
     mode = request.args.get("hub.mode")
     token = request.args.get("hub.verify_token")
     challenge = request.args.get("hub.challenge")
-
     if mode == "subscribe" and token == VERIFY_TOKEN:
         return challenge, 200
-
     return "Verification Failed", 403
-
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    body = request.get_json(silent=True) or {}
-
+    body = request.get_json()
     if body.get("object") != "page":
         return "ignored", 200
-
     for entry in body.get("entry", []):
         for event in entry.get("messaging", []):
             process_event(event)
-
     return "ok", 200
-
 
 def process_event(event):
     sender = event.get("sender", {}).get("id")
-
     if not sender:
         return
-
-    message = event.get("message", {})
-
-    if message.get("is_echo"):
+    if event.get("message", {}).get("is_echo"):
         return
-
     if "message" in event:
         process_message(sender, event["message"])
-
     elif "postback" in event:
-        payload = event["postback"].get("payload", "")
-        process_message(sender, {"text": payload})
+        process_postback(sender, event["postback"])
 
+def process_postback(sender, postback):
+    payload = postback.get("payload", "")
+    typing_on(sender)
+    typing_delay()
+    typing_off(sender)
+    send_message(sender, f"Postback : {payload}")
 
 def process_message(user_id, message):
     try:
@@ -1231,13 +856,14 @@ def process_message(user_id, message):
         text = message.get("text", "")
 
         if not text:
+            # Image received
             attachments = message.get("attachments", [])
-
             if attachments:
+                # According to rules: first message is image → skip greeting, try to match
+                # (Real image matching needs vision AI. Currently fallback)
                 reply = (
-                    "\U0001f4f7 \u099b\u09ac\u09bf \u09aa\u09c7\u09af\u09bc\u09c7\u099b\u09bf\u0964\n\n"
-                    "\u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09c7\u09b0 \u09a8\u09be\u09ae \u09b2\u09bf\u0996\u09c1\u09a8 \u0985\u09a5\u09ac\u09be "
-                    "\u099b\u09ac\u09bf\u099f\u09bf \u0995\u09cb\u09a8 \u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f \u09b8\u09ae\u09cd\u09aa\u09b0\u09cd\u0995\u09c7 \u099c\u09be\u09a8\u09a4\u09c7 \u099a\u09be\u09a8 \u09a4\u09be \u09ac\u09b2\u09c1\u09a8\u0964"
+                    "ছবি পেয়েছি।\n\n"
+                    "অনুগ্রহ করে প্রোডাক্টের নাম লিখুন অথবা কোন প্রোডাক্ট সম্পর্কে জানতে চান তা বলুন।"
                 )
             else:
                 reply = DEFAULT_REPLY
@@ -1250,55 +876,34 @@ def process_message(user_id, message):
     except Exception as e:
         typing_off(user_id)
         log_error(f"Process Message Error : {e}")
-
-        send_message(
-            user_id,
-            "\u274c \u09b8\u09be\u09ae\u09af\u09bc\u09bf\u0995 \u09b8\u09ae\u09b8\u09cd\u09af\u09be \u09b9\u09af\u09bc\u09c7\u099b\u09c7\u0964 \u0985\u09a8\u09c1\u0997\u09cd\u09b0\u09b9 \u0995\u09b0\u09c7 \u0986\u09ac\u09be\u09b0 \u099a\u09c7\u09b7\u09cd\u099f\u09be \u0995\u09b0\u09c1\u09a8\u0964"
-        )
-
+        send_message(user_id, "সাময়িক সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।")
 
 # ==========================================================
-# DATABASE RELOAD / STARTUP
+# DATABASE RELOAD
 # ==========================================================
 
 def reload_database():
-    global PRODUCTS
-    global FAQ_DATABASE
-    global ORDERS
+    global PRODUCTS, FAQ_DATABASE, ORDERS
 
     PRODUCTS = load_json(PRODUCT_FILE)
     ORDERS = load_json(ORDER_FILE)
-    FAQ_DATABASE = load_json(FAQ_FILE)
 
+    FAQ_DATABASE = load_json(FAQ_FILE)
     if not FAQ_DATABASE:
         load_default_faq()
 
     rebuild_search_engine()
     rebuild_faq_index()
-
-    log_info(
-        f"Database Loaded Successfully. "
-        f"Products={len(PRODUCTS)}, FAQ={len(FAQ_DATABASE)}, Orders={len(ORDERS)}"
-    )
-
+    log_info("✅ Database Loaded Successfully.")
 
 def startup():
     reload_database()
-    log_info("Sabuj Bari Bot Started.")
-
-
-# IMPORTANT:
-# Keep startup outside __main__ so gunicorn app:app also initializes indexes.
-startup()
-
+    log_info("✅ Sabuj Bari Bot Started.")
 
 # ==========================================================
-# RUN APPLICATION
+# RUN
 # ==========================================================
 
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 5000)),
-        debug=False
-    )
+    startup()
+    app.run(host="0.0.0.0", port=5000, debug=False)
